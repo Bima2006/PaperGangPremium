@@ -1,0 +1,2428 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50 dark:bg-slate-950 transition-colors duration-500 dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PaperGang Premium - A/L Science & Maths Productivity Suite</title>
+    <!-- Tailwind CSS එන්ජිම -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts අකුරු මෝස්තර -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome අයිකන එකතුව -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        // Premium deep space dark theme colors (no cheap gray)
+                        space: {
+                            950: '#030712',
+                            900: '#0b0f19',
+                            850: '#111827',
+                            800: '#1f2937',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'spin-slow': 'spin 15s linear infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 3s ease-in-out infinite',
+                        'gradient-x': 'gradient-x 15s ease infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        glow: {
+                            '0%, 100%': { boxShadow: '0 0 15px rgba(99, 102, 241, 0.15)' },
+                            '50%': { boxShadow: '0 0 35px rgba(168, 85, 247, 0.45)' },
+                        },
+                        'gradient-x': {
+                            '0%, 100%': { 'background-position': '0% 50%' },
+                            '50%': { 'background-position': '100% 50%' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+        
+        /* පසුබිම් Mesh Gradient ස්ථරය */
+        .ambient-mesh {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background-attachment: fixed;
+            transition: background-image 0.5s ease;
+        }
+
+        .light .ambient-mesh {
+            background-image: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
+                              radial-gradient(at 50% 100%, rgba(243, 244, 246, 0.5) 0px, transparent 50%),
+                              radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.08) 0px, transparent 50%);
+        }
+
+        .dark .ambient-mesh {
+            background-image: radial-gradient(at 0% 0%, rgba(30, 27, 75, 0.65) 0px, transparent 50%),
+                              radial-gradient(at 50% 100%, rgba(3, 7, 18, 0.95) 0px, transparent 50%),
+                              radial-gradient(at 100% 0%, rgba(88, 28, 135, 0.4) 0px, transparent 50%);
+        }
+        
+        /* ග්ලාස්මෝෆිසම් ආචරණය */
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            transition: background 0.5s ease, border-color 0.5s ease;
+        }
+        
+        .dark .glassmorphism {
+            background: rgba(11, 15, 25, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* නියෝන් ආලෝක බෝඩරය */
+        .neon-border {
+            position: relative;
+        }
+        .neon-border::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 1rem;
+            padding: 1.5px;
+            background: linear-gradient(to right, #6366f1, #a855f7);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            opacity: 0.15;
+            transition: opacity 0.3s ease;
+        }
+        .neon-border:hover::before {
+            opacity: 0.75;
+        }
+
+        /* ස්ක්‍රෝල්බාර් හැඩගැස්වීම */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(241, 245, 249, 0.5);
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: rgba(3, 7, 18, 0.5);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.25);
+            border-radius: 99px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.5);
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen text-slate-855 dark:text-slate-100 antialiased transition-colors duration-500 bg-slate-50 dark:bg-space-950">
+
+    <!-- පසුබිම් Mesh Gradient ස්ථරය -->
+    <div class="ambient-mesh"></div>
+
+    <!-- Toast දැනුම්දීම් පද්ධතියේ බහාලුම -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-none"></div>
+
+    <!-- ජංගම දුරකථන සඳහා වම්පස මෙනු තීරුව -->
+    <div id="mobile-menu-drawer" class="fixed inset-0 z-50 hidden bg-slate-955/60 backdrop-blur-sm transition-opacity duration-300">
+        <div class="bg-white dark:bg-space-900 w-72 h-full p-6 flex flex-col justify-between shadow-2xl transition-transform transform -translate-x-full duration-300" id="mobile-drawer-content">
+            <div>
+                <div class="flex items-center justify-between pb-6 border-b border-slate-200 dark:border-slate-800">
+                    <div class="flex items-center gap-3">
+                        <div class="h-9 w-9 rounded-xl bg-indigo-650 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-500/25">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                        </div>
+                        <span class="font-extrabold text-slate-900 dark:text-white">PaperGang</span>
+                    </div>
+                    <button onclick="closeMobileMenu()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-505 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white transition-all">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+                
+                <nav class="flex flex-col gap-3 mt-8">
+                    <a href="#" onclick="navigateToMobile('home')" class="flex items-center gap-3 p-3.5 rounded-2xl font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-space-850 transition-all">
+                        <i class="fa-solid fa-house text-indigo-500"></i> Home
+                    </a>
+                    <a href="#" onclick="navigateToMobile('resources')" class="flex items-center gap-3 p-3.5 rounded-2xl font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-space-850 transition-all">
+                        <i class="fa-solid fa-book-open text-violet-500"></i> Reference Notes
+                    </a>
+                    <a href="#" id="mobile-nav-link-dashboard" onclick="navigateToMobile('dashboard')" class="hidden flex items-center gap-3 p-3.5 rounded-2xl font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-space-850 transition-all">
+                        <i class="fa-solid fa-chart-line text-emerald-500"></i> My Dashboard
+                    </a>
+                </nav>
+            </div>
+            <div class="text-xs font-semibold text-slate-400 border-t border-slate-200 dark:border-slate-800 pt-4">
+                PaperGang Premium Portal &copy; 2026
+            </div>
+        </div>
+    </div>
+
+    <!-- ප්‍රධාන සංචාලන ශීර්ෂකය -->
+    <header class="sticky top-0 z-40 w-full border-b border-slate-200/80 dark:border-slate-800/80 glassmorphism shadow-lg">
+        <div class="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+            
+            <div class="flex items-center gap-4">
+                <!-- Hamburger Button (Left Side - Mobile Only) -->
+                <button onclick="toggleMobileMenu()" class="md:hidden p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-space-900 text-slate-500 dark:text-slate-400 shadow-sm">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+
+                <!-- සන්නාම ලාංඡනය -->
+                <div class="flex items-center gap-3 cursor-pointer group" onclick="navigateTo('home')">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/30 group-hover:scale-105 transition duration-300 animate-pulse-slow">
+                        <i class="fa-solid fa-graduation-cap text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-black tracking-tight bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 dark:from-indigo-400 dark:via-violet-400 dark:to-fuchsia-400 bg-clip-text text-transparent">PaperGang</span>
+                        <span class="text-[10px] block font-bold text-indigo-600 dark:text-indigo-400 tracking-widest uppercase">Premium Suite</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ප්‍රධාන සංචාලන සබැඳි (Desktop Only) -->
+            <nav class="hidden md:flex items-center gap-8 text-sm font-bold text-slate-655 dark:text-slate-300">
+                <a href="#" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-all flex items-center gap-2 py-2 hover:translate-y-[-1px]" onclick="navigateTo('home')">
+                    <i class="fa-solid fa-house text-xs text-indigo-500"></i> Home
+                </a>
+                <a href="#" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-all flex items-center gap-2 py-2 hover:translate-y-[-1px]" onclick="navigateTo('resources')">
+                    <i class="fa-solid fa-book-open text-xs text-violet-500"></i> Reference Notes
+                </a>
+                <a href="#" id="nav-link-dashboard" class="hidden hover:text-indigo-600 dark:hover:text-indigo-400 transition-all flex items-center gap-2 py-2 hover:translate-y-[-1px]" onclick="navigateTo('dashboard')">
+                    <i class="fa-solid fa-chart-line text-xs text-emerald-500"></i> My Dashboard
+                </a>
+            </nav>
+
+            <!-- Profile and Theme controls -->
+            <div class="flex items-center gap-4">
+                <!-- Theme toggle switch -->
+                <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-space-900 transition-all text-slate-500 dark:text-slate-400 hover:text-indigo-500 dark:hover:text-indigo-400 hover:scale-105 shadow-sm">
+                    <i id="theme-toggle-icon" class="fa-solid fa-sun text-sm"></i>
+                </button>
+
+                <!-- ලොග් වී නොමැති පරිශීලක බොත්තම් -->
+                <div id="guest-nav-actions" class="flex items-center gap-2">
+                    <button onclick="openAuthModal('login')" class="text-sm font-bold text-slate-655 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 px-4 py-2.5 transition">Log In</button>
+                    <button onclick="openAuthModal('signup')" class="hidden sm:inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-indigo-600/20 hover:scale-105 transition duration-350">Sign Up</button>
+                </div>
+                
+                <!-- ලොග් වූ පරිශීලක බොත්තම් -->
+                <div id="user-nav-actions" class="hidden flex items-center gap-4">
+                    <button onclick="navigateTo('dashboard')" class="flex items-center gap-2.5 text-sm font-bold text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 group">
+                        <div class="h-9 w-9 rounded-xl overflow-hidden shadow-md shadow-indigo-500/20 border border-slate-250 dark:border-slate-800 group-hover:scale-105 transition-all" id="nav-avatar-wrapper">
+                            <div class="h-full w-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 text-white flex items-center justify-center font-bold text-sm" id="nav-initials">P</div>
+                        </div>
+                        <span id="nav-user-name" class="hidden lg:inline font-bold">My Account</span>
+                    </button>
+                    <button onclick="handleLogout()" class="rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-red-50 dark:hover:bg-red-950/20 px-4 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-red-505 dark:hover:text-red-400 transition flex items-center gap-2 shadow-sm">
+                        <i class="fa-solid fa-right-from-bracket text-red-500 text-xs"></i> <span class="hidden sm:inline">Logout</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- ---------------- SECTION: HOME ---------------- -->
+        <section id="section-home" class="transition-opacity duration-500">
+            <!-- Hero Promotional Content -->
+            <div class="relative overflow-hidden py-20 sm:py-32">
+                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+                        <div class="lg:col-span-7 space-y-8 text-center lg:text-left">
+                            <span class="inline-flex items-center gap-2 rounded-full bg-indigo-50 dark:bg-indigo-950/60 px-4 py-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-300 ring-1 ring-inset ring-indigo-600/10 dark:ring-indigo-500/30 animate-float">
+                                <span class="h-2 w-2 rounded-full bg-indigo-505 dark:bg-indigo-400 animate-ping"></span>
+                                Advanced Level Academic Productivity Suite
+                            </span>
+                            <h1 class="text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-6xl md:text-7xl leading-tight">
+                                Study Smart.<br>
+                                <span class="bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 dark:from-indigo-400 dark:via-violet-450 dark:to-fuchsia-450 bg-clip-text text-transparent">Succeed with PaperGang</span>
+                            </h1>
+                            <p class="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium">
+                                Organize your academic schedule. Instantly access curriculum reference guides for Chemistry, Physics, Combined Mathematics, and Biology, schedule your revision sessions, and focus deeply with customized Pomodoro setups.
+                            </p>
+                            <div class="flex flex-wrap items-center justify-center lg:justify-start gap-5 pt-4">
+                                <button onclick="navigateTo('resources')" class="rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 px-8 py-4 text-base font-bold text-white shadow-xl shadow-indigo-600/30 hover:scale-105 transition-all flex items-center gap-3">
+                                    <i class="fa-solid fa-book-open"></i> Browse Revision Notes
+                                </button>
+                                <button onclick="openAuthModal('signup')" class="rounded-2xl bg-white dark:bg-space-900 border border-slate-200 dark:border-slate-800 px-8 py-4 text-base font-bold text-slate-700 dark:text-slate-200 shadow-sm hover:bg-slate-50 dark:hover:bg-space-850 hover:border-indigo-500/50 hover:scale-105 transition-all flex items-center gap-3">
+                                    <i class="fa-solid fa-user-plus text-indigo-555"></i> Join Now
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Premium Course Card Displays -->
+                        <div class="lg:col-span-5 flex justify-center">
+                            <div class="relative w-full max-w-md animate-float">
+                                <div class="absolute -inset-1 rounded-3xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 opacity-20 dark:opacity-30 blur-2xl"></div>
+                                <div class="relative bg-white dark:bg-space-900/90 p-8 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col gap-6">
+                                    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+                                        <div class="flex items-center gap-2">
+                                            <div class="h-3.5 w-3.5 rounded-full bg-red-400"></div>
+                                            <div class="h-3.5 w-3.5 rounded-full bg-yellow-400"></div>
+                                            <div class="h-3.5 w-3.5 rounded-full bg-green-400"></div>
+                                        </div>
+                                        <span class="text-xs font-mono text-indigo-600 dark:text-indigo-400">active_disciplines</span>
+                                    </div>
+                                    <h4 class="font-black text-slate-405 dark:text-slate-300 text-xs tracking-wider uppercase">High-Yield Modules</h4>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="p-4 bg-red-55/50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 rounded-2xl text-center cursor-pointer hover:border-red-500/50 hover:scale-105 transition-all duration-300" onclick="navigateTo('resources')">
+                                            <i class="fa-solid fa-calculator text-3xl text-red-555 dark:text-red-400 mb-2"></i>
+                                            <span class="block text-xs font-bold text-slate-700 dark:text-slate-200">Combined Maths</span>
+                                        </div>
+                                        <div class="p-4 bg-blue-55/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30 rounded-2xl text-center cursor-pointer hover:border-blue-500/50 hover:scale-105 transition-all duration-300" onclick="navigateTo('resources')">
+                                            <i class="fa-solid fa-atom text-3xl text-blue-555 dark:text-blue-400 mb-2 animate-spin-slow"></i>
+                                            <span class="block text-xs font-bold text-slate-700 dark:text-slate-200">Physics</span>
+                                        </div>
+                                        <div class="p-4 bg-emerald-55/50 dark:bg-emerald-955/20 border border-emerald-100 dark:border-emerald-900/30 rounded-2xl text-center cursor-pointer hover:border-emerald-555 dark:text-emerald-400 mb-2">
+                                            <i class="fa-solid fa-flask text-3xl text-emerald-555 dark:text-emerald-400 mb-2"></i>
+                                            <span class="block text-xs font-bold text-slate-700 dark:text-slate-200">Chemistry</span>
+                                        </div>
+                                        <div class="p-4 bg-amber-55/50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30 rounded-2xl text-center cursor-pointer hover:border-amber-500/50 hover:scale-105 transition-all duration-305" onclick="navigateTo('resources')">
+                                            <i class="fa-solid fa-dna text-3xl text-amber-555 dark:text-amber-400 mb-2"></i>
+                                            <span class="block text-xs font-bold text-slate-700 dark:text-slate-200">Biology</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Highlights Grid -->
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 border-t border-slate-200/60 dark:border-slate-900">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">Structured Student Workspace</h2>
+                    <p class="text-slate-505 dark:text-slate-400 mt-3 text-base">Unleash maximum academic efficiency with specifically developed, integrated utilities.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Feature Card 1 -->
+                    <div class="bg-white dark:bg-space-900 border border-slate-200 dark:border-slate-800 p-8 shadow-md hover:border-indigo-500/30 transition-all duration-300 flex gap-5 neon-border animate-glow">
+                        <div class="h-14 w-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 shadow-sm">
+                            <i class="fa-solid fa-clock-rotate-left text-2xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-xl text-slate-800 dark:text-slate-200 mb-3">Focus Pomodoro</h3>
+                            <p class="text-sm text-slate-505 dark:text-slate-400 leading-relaxed font-medium">
+                                Build steady attention blocks using custom countdown sequences. Extremely helpful for spaced repetition cycles.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Feature Card 2 -->
+                    <div class="bg-white dark:bg-space-900 border border-slate-200 dark:border-slate-800 p-8 shadow-md hover:border-violet-500/30 transition-all duration-300 flex gap-5 neon-border animate-glow">
+                        <div class="h-14 w-14 rounded-2xl bg-violet-50 dark:bg-violet-950/80 text-violet-600 dark:text-violet-400 flex items-center justify-center shrink-0 shadow-sm">
+                            <i class="fa-solid fa-calendar-check text-2xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-xl text-slate-800 dark:text-slate-200 mb-3">Daily Planner</h3>
+                            <p class="text-sm text-slate-550 dark:text-slate-400 leading-relaxed font-medium">
+                                Outline checklist targets for today. Keep tabs on completed metrics synced automatically in the cloud.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Feature Card 3 -->
+                    <div class="bg-white dark:bg-space-900 border border-slate-200 dark:border-slate-800 p-8 shadow-md hover:border-emerald-500/30 transition-all duration-300 flex gap-5 neon-border animate-glow">
+                        <div class="h-14 w-14 rounded-2xl bg-emerald-50 dark:bg-emerald-950/80 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 shadow-sm">
+                            <i class="fa-solid fa-folder-open text-2xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-xl text-slate-800 dark:text-slate-200 mb-3">Notes Directory</h3>
+                            <p class="text-sm text-slate-550 dark:text-slate-400 leading-relaxed font-medium">
+                                Instantly retrieve curriculum reference summaries, high-yield equation sheets, and PDF material.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ---------------- SECTION: RESOURCES ---------------- -->
+        <section id="section-resources" class="hidden transition-opacity duration-500 py-16">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border-b border-slate-200 dark:border-slate-855 pb-8 mb-10">
+                    <div>
+                        <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
+                            <i class="fa-solid fa-folder-open text-indigo-600 dark:text-indigo-400"></i> Curriculum Reference Library
+                        </h2>
+                        <p class="text-sm text-slate-505 dark:text-slate-400 mt-2 font-semibold">Please select your subject to filter and preview curriculum reference notes.</p>
+                    </div>
+                    <!-- Subject Filtering controls -->
+                    <div class="flex flex-wrap gap-2.5 bg-slate-100 dark:bg-space-900 p-2 rounded-2xl border border-slate-200 dark:border-slate-800">
+                        <button onclick="switchResourceTab('maths')" id="tab-btn-maths" class="px-5 py-2.5 text-xs font-bold rounded-xl transition-all text-white bg-indigo-600 shadow-lg">Combined Maths</button>
+                        <button onclick="switchResourceTab('physics')" id="tab-btn-physics" class="px-5 py-2.5 text-xs font-bold rounded-xl transition-all text-slate-600 dark:text-slate-400 hover:text-slate-955 dark:hover:text-slate-200">Physics</button>
+                        <button onclick="switchResourceTab('chemistry')" id="tab-btn-chemistry" class="px-5 py-2.5 text-xs font-bold rounded-xl transition-all text-slate-655 dark:text-slate-400 hover:text-slate-955 dark:hover:text-slate-200">Chemistry</button>
+                        <button onclick="switchResourceTab('bio')" id="tab-btn-bio" class="px-5 py-2.5 text-xs font-bold rounded-xl transition-all text-slate-655 dark:text-slate-400 hover:text-slate-955 dark:hover:text-slate-200">Biology</button>
+                    </div>
+                </div>
+
+                <!-- Guest locking interface -->
+                <div id="resources-unauthorized-guard" class="hidden">
+                    <div class="bg-white dark:bg-space-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-10 text-center max-w-lg mx-auto shadow-2xl space-y-6">
+                        <div class="h-20 w-20 bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 flex items-center justify-center rounded-2xl mx-auto shadow-lg">
+                            <i class="fa-solid fa-lock text-4xl"></i>
+                        </div>
+                        <div class="space-y-3">
+                            <h3 class="font-extrabold text-2xl text-slate-900 dark:text-white">Unlock Premium Revision Guides</h3>
+                            <p class="text-sm text-slate-550 dark:text-slate-400 leading-relaxed font-medium">
+                                Join our thriving learning platform today. Simply create a free account or log in to secure immediate access to comprehensive study sheets.
+                            </p>
+                        </div>
+                        <div class="flex items-center justify-center gap-4 pt-3">
+                            <button onclick="openAuthModal('login')" class="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-505 text-sm font-bold text-white transition-all shadow-lg hover:scale-105">Log In</button>
+                            <button onclick="openAuthModal('signup')" class="px-6 py-3 rounded-xl border border-slate-200 dark:border-slate-850 hover:bg-slate-555 dark:hover:bg-slate-800 text-sm font-bold text-slate-700 dark:text-slate-300 transition-all hover:scale-105">Create Account</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Resource Cards Container (Loaded Live from Firebase Firestore) -->
+                <div id="resources-authorized-content" class="space-y-8">
+                    <!-- Category: Combined Maths -->
+                    <div id="category-maths" class="resource-category grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Dynamic items populate here -->
+                    </div>
+
+                    <!-- Category: Physics -->
+                    <div id="category-physics" class="resource-category hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Dynamic items populate here -->
+                    </div>
+
+                    <!-- Category: Chemistry -->
+                    <div id="category-chemistry" class="resource-category hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Dynamic items populate here -->
+                    </div>
+
+                    <!-- Category: Biology -->
+                    <div id="category-bio" class="resource-category hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Dynamic items populate here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ---------------- SECTION: USER DASHBOARD ---------------- -->
+        <section id="section-dashboard" class="hidden transition-opacity duration-500 py-12">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6">
+                <!-- Welcome Banner Card -->
+                <div class="bg-gradient-to-r from-indigo-900 via-purple-900 to-pink-900 rounded-3xl p-8 text-white shadow-2xl mb-10 relative overflow-hidden animate-gradient-x border border-slate-800">
+                    <div class="absolute -right-8 -bottom-8 opacity-20 text-9xl">
+                        <i class="fa-solid fa-cubes"></i>
+                    </div>
+                    <div class="relative z-10 space-y-3">
+                        <div class="inline-flex items-center gap-2 bg-white/10 px-4 py-1.5 rounded-full text-xs font-semibold backdrop-blur-md border border-white/10">
+                            <span class="flex h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse"></span> Connected to Cloud Sync
+                        </div>
+                        <h2 class="text-3xl sm:text-4xl font-black tracking-tight">Welcome, <span id="dash-welcome-name">Scholar</span>!</h2>
+                        <p class="text-indigo-100 text-sm max-w-xl">Supercharge your learning workflow. Build schedules, clear tasks, and maintain deep focus cycles.</p>
+                    </div>
+                </div>
+
+                <!-- Main Grid Layout -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    
+                    <!-- Left Columns: Focus & Tasks (8 cols) -->
+                    <div class="lg:col-span-8 space-y-8">
+                        
+                        <!-- Interactive Focus Pomodoro -->
+                        <div class="bg-white dark:bg-space-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-2xl flex flex-col md:flex-row items-center gap-10 relative overflow-hidden">
+                            <div class="absolute top-4 left-4 flex items-center gap-2">
+                                <span class="h-2 w-2 rounded-full bg-indigo-505 animate-ping"></span>
+                                <span class="text-[9px] font-bold tracking-widest uppercase text-slate-405 dark:text-slate-500">Deep Focus Engine</span>
+                            </div>
+                            
+                            <!-- Circular Timer Graphics -->
+                            <div class="relative flex items-center justify-center shrink-0 w-48 h-48 animate-glow rounded-full">
+                                <svg class="w-full h-full transform -rotate-90">
+                                    <circle cx="96" cy="96" r="82" stroke-width="8" stroke="currentColor" class="text-slate-100 dark:text-slate-800" fill="transparent"/>
+                                    <circle id="timer-progress-circle" cx="96" cy="96" r="82" stroke-width="8" stroke="currentColor" class="text-indigo-600 dark:text-indigo-500 transition-all duration-300" stroke-dasharray="515" stroke-dashoffset="0" stroke-linecap="round" fill="transparent"/>
+                                </svg>
+                                <div class="absolute text-center">
+                                    <span id="timer-time-display" class="block font-mono text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">25:00</span>
+                                    <span id="timer-state-label" class="text-[9px] uppercase tracking-widest font-black text-slate-400 dark:text-slate-500">Ready</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Configuration & Actions -->
+                            <div class="flex-grow space-y-5 w-full text-center md:text-left">
+                                <div class="space-y-1">
+                                    <h3 class="font-extrabold text-2xl text-slate-855 dark:text-white">Study Pomodoro</h3>
+                                    <p class="text-xs text-slate-505 dark:text-slate-400 leading-relaxed font-medium">Spur cognitive retention and block distracting triggers by working in intensive focused blocks.</p>
+                                </div>
+                                
+                                <div class="flex flex-wrap items-center justify-center md:justify-start gap-3">
+                                    <!-- Durations presets picker -->
+                                    <div class="flex items-center gap-1.5 border border-slate-200 dark:border-slate-800 p-1.5 rounded-2xl bg-slate-50 dark:bg-space-950">
+                                        <span class="text-xs font-bold text-slate-405 dark:text-slate-500 px-2">Set:</span>
+                                        <button onclick="adjustTimerDuration(10)" class="px-3 py-1.5 text-xs font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-space-850 text-slate-700 dark:text-slate-300 transition">10m</button>
+                                        <button onclick="adjustTimerDuration(25)" class="px-3 py-1.5 text-xs font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-space-850 text-slate-700 dark:text-slate-300 transition bg-white dark:bg-space-900 shadow-sm border border-slate-200/50 dark:border-slate-800">25m</button>
+                                        <button onclick="adjustTimerDuration(50)" class="px-3 py-1.5 text-xs font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-space-850 text-slate-700 dark:text-slate-305 transition">50m</button>
+                                    </div>
+                                    
+                                    <!-- Custom minute specification -->
+                                    <input type="number" id="timer-custom-min" placeholder="Min" min="1" max="180" class="w-20 rounded-2xl border border-slate-200 dark:border-slate-800 px-3.5 py-2.5 text-xs text-center focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white dark:bg-space-950 text-slate-800 dark:text-white transition">
+                                    <button onclick="applyCustomTimer()" class="px-4 py-2.5 bg-slate-100 dark:bg-space-800 hover:bg-slate-250 dark:hover:bg-slate-750 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-300 transition-all border border-slate-200 dark:border-slate-800">Apply</button>
+                                </div>
+
+                                <div class="flex items-center justify-center md:justify-start gap-3 pt-1">
+                                    <button id="btn-timer-toggle" onclick="toggleTimer()" class="px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-550 text-sm font-bold text-white shadow-xl shadow-indigo-600/20 transition-all flex items-center gap-2">
+                                        <i class="fa-solid fa-play"></i> Start focus
+                                    </button>
+                                    <button onclick="resetTimer()" class="px-5 py-3 rounded-2xl border border-slate-200 dark:border-slate-850 hover:bg-slate-50 dark:hover:bg-space-855 text-sm font-bold text-slate-600 dark:text-slate-300 transition-all flex items-center gap-2 shadow-sm">
+                                        <i class="fa-solid fa-rotate-right"></i> Reset
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Daily Goals Todo planner -->
+                        <div class="bg-white dark:bg-space-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6">
+                            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-5">
+                                <div>
+                                    <h3 class="font-extrabold text-xl text-slate-855 dark:text-white flex items-center gap-2">
+                                        <i class="fa-solid fa-clipboard-list text-indigo-505"></i> Daily Plan Tracker
+                                    </h3>
+                                    <p class="text-xs text-slate-550 dark:text-slate-400 font-medium">Record specific revisions for today. Clear goals to sync completion rates.</p>
+                                </div>
+                                <div class="text-right">
+                                    <span id="todo-progress-label" class="text-xs font-bold text-indigo-600 dark:text-indigo-400">0% Done</span>
+                                    <div class="w-28 bg-slate-100 dark:bg-slate-800 h-2.5 rounded-full mt-2 overflow-hidden border border-slate-200 dark:border-slate-850">
+                                        <div id="todo-progress-bar" class="bg-gradient-to-r from-indigo-500 to-purple-500 h-full w-0 transition-all duration-500"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Insertion Form -->
+                            <form onsubmit="handleAddTodo(event)" class="flex gap-3">
+                                <input type="text" id="todo-input" required placeholder="Type a study goal (e.g. Do Physics 2022 MCQ Struct)..." class="flex-grow rounded-2xl border border-slate-200 dark:border-slate-850 px-5 py-3.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white dark:bg-space-955 text-slate-850 dark:text-white transition">
+                                <button type="submit" class="px-6 py-3.5 bg-indigo-600 hover:bg-indigo-505 text-sm font-bold text-white rounded-2xl shadow-lg transition-all flex items-center gap-2 shrink-0 hover:scale-105">
+                                    <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">Add Task</span>
+                                </button>
+                            </form>
+
+                            <!-- Interactive goals mapping list -->
+                            <div class="relative min-h-[120px]">
+                                <ul id="todo-list" class="space-y-3">
+                                    <!-- Rendered on-the-fly dynamically -->
+                                </ul>
+                                <div id="todo-empty-state" class="absolute inset-0 flex flex-col items-center justify-center text-center py-6 text-slate-455 dark:text-slate-555">
+                                    <i class="fa-solid fa-list-check text-3xl mb-3 opacity-40"></i>
+                                    <p class="text-sm font-bold">No active goals listed. Map your targets above!</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Weekly Scheduler Timetable -->
+                        <div class="bg-white dark:bg-space-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6">
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
+                                <div>
+                                    <h3 class="font-extrabold text-xl text-slate-855 dark:text-white flex items-center gap-2">
+                                        <i class="fa-solid fa-calendar-days text-indigo-505"></i> Weekly Calendar Grid
+                                    </h3>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Click day slots to schedule customized study sessions and organize your week.</p>
+                                </div>
+                                <button onclick="openTimetableModal()" class="px-4 py-2.5 bg-slate-100 dark:bg-space-800 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-500 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-300 transition-all flex items-center gap-2 shrink-0 hover:scale-105 border border-slate-200 dark:border-slate-800 shadow-sm">
+                                    <i class="fa-solid fa-calendar-plus text-xs"></i> Add Schedule Slot
+                                </button>
+                            </div>
+
+                            <!-- Timetable Grid Populator -->
+                            <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3.5" id="timetable-days-grid">
+                                <!-- Rendered dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Profile details (4 cols) -->
+                    <div class="lg:col-span-4 space-y-6">
+                        <!-- පැතිකඩ තොරතුරු කාඩ්පත -->
+                        <div class="bg-white dark:bg-space-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 text-center shadow-xl">
+                            <div class="relative inline-block mb-4">
+                                <div class="h-28 w-28 rounded-3xl overflow-hidden shadow-2xl border-2 border-white dark:border-slate-855 transform rotate-3" id="profile-avatar-wrapper">
+                                    <!-- Dynamic Avatar Picture Frame -->
+                                    <div class="h-full w-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 text-white flex items-center justify-center text-4xl font-black" id="profile-initials">P</div>
+                                </div>
+                                <div class="absolute bottom-1 right-1 h-7 w-7 rounded-full bg-emerald-500 border-2 border-white dark:border-space-900 flex items-center justify-center text-white text-xs shadow-md" title="Sync Status Active">
+                                    <i class="fa-solid fa-check"></i>
+                                </div>
+                            </div>
+                            <h3 id="profile-summary-name" class="font-extrabold text-xl text-slate-800 dark:text-white">Pumping Bio...</h3>
+                            <p id="profile-summary-email" class="text-xs text-slate-400 dark:text-slate-555 font-mono truncate max-w-full">student@eduspark.com</p>
+                            
+                            <!-- Badges -->
+                            <div class="mt-6 pt-6 border-t border-slate-100 dark:border-slate-855 grid grid-cols-2 gap-3 text-left">
+                                <div class="bg-slate-50 dark:bg-space-950 p-3 rounded-2xl border border-slate-200 dark:border-slate-855 shadow-sm">
+                                    <p class="text-[9px] uppercase font-bold text-slate-400 dark:text-slate-505 font-sans">ACADEMIC STREAM</p>
+                                    <p class="font-bold text-slate-700 dark:text-slate-300 text-xs truncate" id="stat-stream">Physical Science</p>
+                                </div>
+                                <div class="bg-slate-50 dark:bg-space-950 p-3 rounded-2xl border border-slate-200 dark:border-slate-855 shadow-sm">
+                                    <p class="text-[9px] uppercase font-bold text-slate-400 dark:text-slate-505 font-sans">SAVED TOPICS</p>
+                                    <p class="font-bold text-slate-700 dark:text-slate-300 text-xs" id="stat-subjects-count">0</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- පැතිකඩ සංස්කරණ පෝරමය -->
+                        <div class="bg-white dark:bg-space-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-xl">
+                            <h4 class="font-extrabold text-xs text-slate-400 dark:text-slate-455 uppercase tracking-widest mb-4 border-b border-slate-150 dark:border-slate-850 pb-3">Update Profile Info</h4>
+                            <form id="profile-edit-form" onsubmit="handleProfileUpdate(event)" class="space-y-4">
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-455 dark:text-slate-500 mb-1.5">Full Name</label>
+                                    <input type="text" id="edit-display-name" required class="w-full rounded-2xl border border-slate-200 dark:border-slate-800 px-4 py-3 text-xs focus:border-indigo-500 focus:outline-none bg-white dark:bg-space-950 text-slate-800 dark:text-white transition">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-455 dark:text-slate-500 mb-1.5">Upload Profile Photo</label>
+                                    <div class="flex items-center gap-3">
+                                        <label class="flex-grow flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-slate-300 dark:border-slate-700 rounded-2xl cursor-pointer hover:bg-slate-50 dark:hover:bg-space-950 transition duration-300">
+                                            <i class="fa-solid fa-camera text-slate-400"></i>
+                                            <span class="text-xs font-bold text-slate-555 dark:text-slate-400" id="file-label-text">Select Image File</span>
+                                            <input type="file" id="edit-avatar-file" accept="image/*" class="hidden" onchange="handleFileSelected(event)">
+                                        </label>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-455 dark:text-slate-500 mb-1.5">Focus Stream</label>
+                                    <select id="edit-stream" class="w-full rounded-2xl border border-slate-200 dark:border-slate-800 px-4 py-3 text-xs focus:border-indigo-500 focus:outline-none bg-white dark:bg-space-950 text-slate-800 dark:text-white transition">
+                                        <option value="Physical Science">Physical Science (Combined Maths)</option>
+                                        <option value="Biological Science">Biological Science (Biology)</option>
+                                        <option value="Other Streams">Other Academic Stream</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-455 dark:text-slate-500 mb-1.5">Target Study Goal / Motto</label>
+                                    <textarea id="edit-bio" rows="2" placeholder="Record your motivational quote..." class="w-full rounded-2xl border border-slate-200 dark:border-slate-800 px-4 py-3 text-xs focus:border-indigo-500 focus:outline-none bg-white dark:bg-space-955 text-slate-850 dark:text-white transition"></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-455 dark:text-slate-500 mb-2">Subject Favorites</label>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <label class="flex items-center gap-2 p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-101 dark:hover:bg-space-955 cursor-pointer text-[11px] transition">
+                                            <input type="checkbox" name="interest" value="Combined Maths" class="rounded text-indigo-600 focus:ring-indigo-505 bg-white dark:bg-space-955 border-slate-300 dark:border-slate-800">
+                                            <span class="text-slate-650 dark:text-slate-300 font-bold">Maths</span>
+                                        </label>
+                                        <label class="flex items-center gap-2 p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-101 dark:hover:bg-space-955 cursor-pointer text-[11px] transition">
+                                            <input type="checkbox" name="interest" value="Physics" class="rounded text-indigo-600 focus:ring-indigo-505 bg-white dark:bg-space-955 border-slate-300 dark:border-slate-800">
+                                            <span class="text-slate-655 dark:text-slate-300 font-bold">Physics</span>
+                                        </label>
+                                        <label class="flex items-center gap-2 p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-101 dark:hover:bg-space-955 cursor-pointer text-[11px] transition">
+                                            <input type="checkbox" name="interest" value="Chemistry" class="rounded text-indigo-600 focus:ring-indigo-505 bg-white dark:bg-space-955 border-slate-300 dark:border-slate-800">
+                                            <span class="text-slate-655 dark:text-slate-300 font-bold">Chemistry</span>
+                                        </label>
+                                        <label class="flex items-center gap-2 p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-101 dark:hover:bg-space-955 cursor-pointer text-[11px] transition">
+                                            <input type="checkbox" name="interest" value="Biology" class="rounded text-indigo-600 focus:ring-indigo-505 bg-white dark:bg-space-955 border-slate-300 dark:border-slate-800">
+                                            <span class="text-slate-655 dark:text-slate-300 font-bold">Biology</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <button type="submit" id="btn-save-profile" class="w-full py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-xs font-bold text-white shadow-lg transition-all flex items-center justify-center gap-2 hover:scale-105">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i> Save Details
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- System Cloud Binding Indicators -->
+                        <div class="bg-white dark:bg-space-900 rounded-3xl p-6 shadow-xl border border-slate-200 dark:border-slate-855 space-y-3">
+                            <div class="flex items-center gap-2">
+                                <span class="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <h4 class="font-extrabold text-[10px] text-slate-455 dark:text-slate-455 uppercase tracking-widest">Active Security Profile (UID)</h4>
+                            </div>
+                            <p class="text-[10px] text-slate-550 dark:text-slate-400 leading-relaxed font-medium">Your current secure session unique identifier mapping key:</p>
+                            <div class="bg-slate-50 dark:bg-space-900 rounded-xl p-3 text-indigo-600 dark:text-cyan-400 font-mono text-[10px] break-all relative group border border-slate-200 dark:border-slate-800">
+                                <span id="db-user-uid">unresolved_guest_state</span>
+                                <button onclick="copyToClipboard('db-user-uid')" class="absolute top-2.5 right-2 opacity-0 group-hover:opacity-100 bg-slate-200 dark:bg-space-800 p-1.5 rounded hover:bg-slate-300 dark:hover:bg-slate-705 text-slate-700 dark:text-white transition-all" title="Copy key">
+                                    <i class="fa-regular fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ---------------- PORTALS / OVERLAYS / MODALS ---------------- -->
+    
+    <!-- Passcode Verification Overlay Modal (ඇඩ්මින් දොරටුව) -->
+    <div id="admin-passcode-modal" class="fixed inset-0 z-50 hidden bg-slate-955/80 backdrop-blur-md items-center justify-center p-4">
+        <div class="bg-white dark:bg-space-900 w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="admin-passcode-card">
+            <div class="border-b border-slate-100 dark:border-slate-800 px-6 py-4 flex items-center justify-between bg-slate-50 dark:bg-space-950">
+                <h3 class="font-extrabold text-lg text-slate-800 dark:text-white">Admin Portal Lock</h3>
+                <button onclick="closeAdminPasscodeGate()" class="p-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-505 dark:text-slate-400 hover:text-slate-855 dark:hover:text-white transition-all">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-6 text-center space-y-6">
+                <div class="h-16 w-16 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center rounded-2xl mx-auto shadow-xl">
+                    <i class="fa-solid fa-user-shield text-2xl"></i>
+                </div>
+                <div class="space-y-1">
+                    <h4 class="text-xl font-extrabold text-slate-800 dark:text-white">Passcode Authorization</h4>
+                    <p class="text-xs text-slate-555 dark:text-slate-400">Please provide your secure PaperGang administrator passcode.</p>
+                </div>
+                <form onsubmit="handlePasscodeVerification(event)" class="space-y-4">
+                    <input type="password" id="admin-secret-passcode" required placeholder="••••••••" class="w-full rounded-2xl border border-slate-200 dark:border-slate-800 px-5 py-3.5 text-center text-sm focus:border-indigo-500 focus:outline-none bg-white dark:bg-slate-950 text-slate-850 dark:text-white tracking-widest transition shadow-sm">
+                    <button type="submit" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-sm font-bold text-white shadow-lg transition-all hover:scale-[1.02]">
+                        Unlock Dashboard
+                    </button>
+                </form>
+                <p class="text-[10px] text-slate-400 dark:text-slate-500">Hint: Default admin passcode is <code class="bg-slate-100 dark:bg-slate-955 px-2 py-1 rounded text-indigo-550 dark:text-indigo-400">admin123</code></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Integrated Admin Panel Main Dashboard Modal (ඇඩ්මින් කළමනාකරණ පැනලය) -->
+    <div id="admin-panel-modal" class="fixed inset-0 z-50 hidden bg-slate-955/90 backdrop-blur-md items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white dark:bg-space-900 w-full max-w-5xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden transform scale-95 opacity-0 transition-all duration-300 flex flex-col h-[90vh]" id="admin-panel-card">
+            
+            <!-- Admin Header -->
+            <div class="border-b border-slate-200 dark:border-slate-800 px-6 py-4 flex items-center justify-between bg-slate-50 dark:bg-space-950 shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center rounded-xl shadow shadow-indigo-500/10">
+                        <i class="fa-solid fa-user-shield text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-extrabold text-slate-800 dark:text-white leading-none text-base">PaperGang Admin Management</h3>
+                        <p class="text-[10px] text-slate-405 font-bold mt-1">REAL-TIME PUBLIC CLOUD DIRECTORY</p>
+                    </div>
+                </div>
+                <button onclick="closeAdminPanel()" class="p-1.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-505 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-all">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Admin Body Grid -->
+            <div class="flex-grow overflow-y-auto p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Column Left: Addition Form -->
+                <div class="lg:col-span-5 space-y-6">
+                    <div class="bg-slate-50 dark:bg-space-955 border border-slate-200 dark:border-slate-855 p-6 rounded-2xl shadow-inner space-y-5">
+                        <h4 class="font-bold text-slate-800 dark:text-slate-200 border-b border-slate-200 dark:border-slate-850 pb-2 flex items-center gap-2 text-sm uppercase tracking-wider"><i class="fa-solid fa-plus text-indigo-505"></i> Add New PDF Note</h4>
+                        
+                        <form onsubmit="handleAddNewResource(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-450 dark:text-slate-500 mb-1.5">Note Title</label>
+                                <input type="text" id="resource-title" required placeholder="e.g. Limits & Differentiation" class="w-full rounded-2xl border border-slate-200 dark:border-slate-850 px-4 py-3 text-xs focus:border-indigo-500 focus:outline-none bg-white dark:bg-slate-900 text-slate-800 dark:text-white transition shadow-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-455 dark:text-slate-500 mb-1.5">Category</label>
+                                <select id="resource-category" class="w-full rounded-2xl border border-slate-200 dark:border-slate-855 px-4 py-3 text-xs focus:border-indigo-500 focus:outline-none bg-white dark:bg-slate-900 text-slate-800 dark:text-white transition shadow-sm">
+                                    <option value="Combined Maths">Combined Mathematics</option>
+                                    <option value="Physics">Physics</option>
+                                    <option value="Chemistry">Chemistry</option>
+                                    <option value="Biology">Biology</option>
+                                </select>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-455 dark:text-slate-500 mb-1.5">Option A: Upload Local PDF (Max 1MB)</label>
+                                    <label class="flex items-center justify-center gap-2 px-4 py-3.5 border border-dashed border-slate-300 dark:border-slate-800 rounded-2xl cursor-pointer bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-space-950 transition duration-305">
+                                        <i class="fa-solid fa-file-arrow-up text-slate-400"></i>
+                                        <span class="text-xs font-bold text-slate-555 dark:text-slate-400" id="pdf-file-label">Select PDF File</span>
+                                        <input type="file" id="resource-file" accept="application/pdf" class="hidden" onchange="handlePdfSelected(event)">
+                                    </label>
+                                </div>
+
+                                <div class="relative flex py-1.5 items-center">
+                                    <div class="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
+                                    <span class="flex-shrink mx-3 text-[9px] font-bold text-slate-400 uppercase">Or</span>
+                                    <div class="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-455 dark:text-slate-500 mb-1.5">Option B: Online PDF Link (Dropbox, drive etc)</label>
+                                    <input type="url" id="resource-link" placeholder="https://drive.google.com/file/d/..." class="w-full rounded-2xl border border-slate-200 dark:border-slate-855 px-4 py-3 text-xs focus:border-indigo-500 focus:outline-none bg-white dark:bg-slate-900 text-slate-800 dark:text-white transition shadow-sm">
+                                </div>
+                            </div>
+
+                            <button type="submit" id="btn-add-resource" class="w-full py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-505 text-xs font-bold text-white shadow-lg transition-all flex items-center justify-center gap-2 hover:scale-[1.02]">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Upload and Sync Note
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Column Right: List of Sync Documents -->
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="space-y-4">
+                        <h4 class="font-bold text-slate-800 dark:text-slate-200 border-b border-slate-250 dark:border-slate-800 pb-2 text-sm uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-folder-open text-violet-500"></i> Synced Student Library</h4>
+                        
+                        <div class="space-y-3 max-h-[55vh] overflow-y-auto pr-2" id="admin-resources-list">
+                            <!-- Populated on live snap -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-200 dark:border-slate-800 p-4 bg-slate-50 dark:bg-space-955 flex justify-end gap-3 shrink-0">
+                <button onclick="closeAdminPanel()" class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-650 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-space-900 transition-all">Close Panel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sign Up & Authentication Modal -->
+    <div id="auth-modal" class="fixed inset-0 z-50 hidden bg-slate-955/80 backdrop-blur-md items-center justify-center p-4">
+        <div class="bg-white dark:bg-space-900 w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="auth-modal-card">
+            
+            <div class="border-b border-slate-100 dark:border-slate-800 px-6 py-4 flex items-center justify-between bg-slate-50 dark:bg-space-950">
+                <h3 id="auth-modal-title" class="font-extrabold text-lg text-slate-850 dark:text-white">Log In</h3>
+                <button onclick="closeAuthModal()" class="p-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-505 dark:text-slate-400 hover:text-slate-855 dark:hover:text-white transition-all">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-4">
+                <!-- Portal Type Toggles -->
+                <div class="grid grid-cols-2 bg-slate-100 dark:bg-space-950 p-1 rounded-2xl border border-slate-200 dark:border-slate-855">
+                    <button id="tab-login" onclick="switchAuthTab('login')" class="py-2.5 text-xs font-bold rounded-xl transition-all text-slate-800 dark:text-white bg-white dark:bg-space-900 shadow-md border border-slate-200 dark:border-slate-805">Log In</button>
+                    <button id="tab-signup" onclick="switchAuthTab('signup')" class="py-2.5 text-xs font-bold rounded-xl transition-all text-slate-505 dark:text-slate-455 hover:text-slate-855 dark:hover:text-white">Sign Up</button>
+                </div>
+
+                <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                    <!-- Display Name for registering -->
+                    <div id="auth-name-field" class="hidden">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Full Name</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-450">
+                                <i class="fa-solid fa-user-tag text-xs"></i>
+                            </span>
+                            <input type="text" id="auth-display-name" placeholder="John Doe" class="w-full rounded-2xl border border-slate-200 dark:border-slate-800 pl-10 pr-4 py-3 text-sm focus:border-indigo-500 focus:outline-none bg-white dark:bg-slate-950 text-slate-800 dark:text-white transition">
+                        </div>
+                    </div>
+
+                    <!-- Email address field -->
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Email Address</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                                <i class="fa-solid fa-envelope text-xs"></i>
+                            </span>
+                            <input type="email" id="auth-email" required placeholder="scholar@example.com" class="w-full rounded-2xl border border-slate-200 dark:border-slate-800 pl-10 pr-4 py-3 text-sm focus:border-indigo-500 focus:outline-none bg-white dark:bg-space-955 text-slate-855 dark:text-white transition">
+                        </div>
+                    </div>
+
+                    <!-- Password field -->
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-555 mb-1.5">Password</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-405">
+                                <i class="fa-solid fa-lock text-xs"></i>
+                            </span>
+                            <input type="password" id="auth-password" required placeholder="••••••••" class="w-full rounded-2xl border border-slate-200 dark:border-slate-800 pl-10 pr-4 py-3 text-sm focus:border-indigo-500 focus:outline-none bg-white dark:bg-space-950 text-slate-850 dark:text-white transition">
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btn-auth-submit" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-505 hover:to-violet-500 text-sm font-bold text-white shadow-lg shadow-indigo-600/20 transition-all hover:scale-[1.02]">
+                        Log In
+                    </button>
+                </form>
+
+                <!-- Sandbox Autofill Toggle -->
+                <div class="pt-4 border-t border-slate-100 dark:border-slate-855 text-center">
+                    <button onclick="handleSandboxAccess()" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-555 transition-all">
+                        <i class="fa-solid fa-bug mr-1"></i> Sandbox Quick Autofill (Testing Mode)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Timetable Scheduling Modal -->
+    <div id="timetable-modal" class="fixed inset-0 z-50 hidden bg-slate-955/80 backdrop-blur-md items-center justify-center p-4">
+        <div class="bg-white dark:bg-space-900 w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="timetable-modal-card">
+            
+            <div class="border-b border-slate-100 dark:border-slate-800 px-6 py-4 flex items-center justify-between bg-slate-50 dark:bg-space-950">
+                <h3 class="font-extrabold text-lg text-slate-855 dark:text-white">Add Study Slot</h3>
+                <button onclick="closeTimetableModal()" class="p-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-505 dark:text-slate-450 hover:text-slate-855 dark:hover:text-white transition-all">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleTimetableSubmit(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-550 mb-1.5">Target Study Day</label>
+                    <select id="time-day" class="w-full rounded-2xl border border-slate-200 dark:border-slate-800 px-4 py-3 text-xs focus:border-indigo-500 bg-white dark:bg-space-950 text-slate-800 dark:text-white transition">
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                        <option value="Sunday">Sunday</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-555 mb-1.5">Subject / Focus Category</label>
+                    <input type="text" id="time-subject" required placeholder="e.g., Chemistry Organic Synthesis" class="w-full rounded-2xl border border-slate-200 dark:border-slate-800 px-4 py-3 text-xs focus:border-indigo-500 bg-white dark:bg-space-950 text-slate-800 dark:text-white transition">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-555 mb-1.5">Start Time</label>
+                        <input type="time" id="time-start" required class="w-full rounded-2xl border border-slate-200 dark:border-slate-800 px-4 py-3 text-xs focus:border-indigo-500 bg-white dark:bg-space-950 text-slate-800 dark:text-white transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-555 mb-1.5">End Time</label>
+                        <input type="time" id="time-end" required class="w-full rounded-2xl border border-slate-200 dark:border-slate-800 px-4 py-3 text-xs focus:border-indigo-500 bg-white dark:bg-space-950 text-slate-800 dark:text-white transition">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-505 hover:to-violet-500 text-sm font-bold text-white shadow-lg transition-all hover:scale-[1.02]">
+                    Schedule Study Slot
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Document PDF Simulator view modal -->
+    <div id="pdf-viewer-modal" class="fixed inset-0 z-50 hidden bg-slate-955/90 backdrop-blur-md items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-4xl h-[85vh] rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col">
+            <div class="border-b border-slate-200 dark:border-slate-800 px-6 py-4 flex items-center justify-between bg-slate-50 dark:bg-space-955 text-slate-800 dark:text-white">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-file-pdf text-red-500 text-xl"></i>
+                    <h3 id="pdf-viewer-title" class="font-bold text-sm sm:text-base truncate">Document Reader</h3>
+                </div>
+                <button onclick="closePdfViewer()" class="p-1.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-705 transition-all text-slate-700 dark:text-white">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="flex-grow overflow-y-auto p-6 sm:p-8 bg-slate-100 dark:bg-space-950 flex justify-center items-start">
+                <div class="bg-white dark:bg-space-900 shadow-2xl rounded-2xl border border-slate-200 dark:border-slate-800 p-8 sm:p-12 w-full max-w-3xl space-y-6 select-none relative h-[70vh]">
+                    <!-- Real PDF Reader Frame -->
+                    <iframe id="pdf-frame" src="" class="w-full h-full rounded-2xl border border-slate-200 dark:border-slate-800 shadow-inner animate-float" frameborder="0"></iframe>
+                </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="border-t border-slate-200 dark:border-slate-800 p-4 bg-slate-50 dark:bg-space-950 flex justify-end gap-3 shrink-0">
+                <button onclick="closePdfViewer()" class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-655 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-space-900 transition-all">Close Reader</button>
+                <button id="pdf-download-action-btn" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-bold text-white shadow-lg transition-all flex items-center gap-2 hover:scale-105">
+                    <i class="fa-solid fa-download"></i> Open in New Tab
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Footer -->
+    <footer class="bg-white dark:bg-space-955 border-t border-slate-200 dark:border-slate-900 py-10 mt-auto shadow-inner">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-slate-505">
+            <p>&copy; 2026 PaperGang Premium Portal. All rights reserved.</p>
+            <p class="font-bold text-slate-400 font-sans">Developed by: <span onclick="openAdminPasscodeGate()" class="text-indigo-650 dark:text-indigo-400 font-extrabold cursor-pointer hover:underline" title="Administrator Entrance">ARURA ( Bimsara Lakshan )</span></p>
+        </div>
+    </footer>
+
+    <!-- Firebase මොඩියුල සබඳතාවය -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword, 
+            signOut, 
+            onAuthStateChanged,
+            signInWithCustomToken,
+            signInAnonymously
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            getDoc, 
+            setDoc, 
+            updateDoc,
+            collection,
+            getDocs,
+            onSnapshot,
+            deleteDoc
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Verified Firebase Config parameters
+        const firebaseConfig = {
+            apiKey: "AIzaSyDxt1IckmcGpJmMly7nuf23NJC-lvW4CIE",
+            authDomain: "paper-gang-v3.firebaseapp.com",
+            projectId: "paper-gang-v3",
+            storageBucket: "paper-gang-v3.firebasestorage.app",
+            messagingSenderId: "642756292247",
+            appId: "1:642756292247:web:01c0f22c64bbd06cd443d2"
+        };
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'paper-gang-v3-app';
+        let db = null;
+        let auth = null;
+        let isFirebaseMock = false;
+        let activeAdminBase64String = ""; // Base64 buffer for PDF file upload
+
+        // Mock Default Resources to seed or fallback to if Firestore public data is empty (පෙරනිමි PDF සම්පත්)
+        const defaultMockResources = [
+            { id: "math-01", title: "Limits & Differentiation", category: "Combined Maths", fileUrl: "https://drive.google.com/file/d/1Xy_X50A/preview" },
+            { id: "math-02", title: "Forces & Vectors", category: "Combined Maths", fileUrl: "" },
+            { id: "math-03", title: "Trigonometry Formulas", category: "Combined Maths", fileUrl: "" },
+            { id: "phys-01", title: "Mechanics Summary Note", category: "Physics", fileUrl: "" },
+            { id: "phys-02", title: "Waves & Oscillations", category: "Physics", fileUrl: "" },
+            { id: "chem-01", title: "Organic Synthesis Roadmap", category: "Chemistry", fileUrl: "" },
+            { id: "bio-01", title: "Cell Biology Overview", category: "Biology", fileUrl: "" }
+        ];
+
+        // Reactive Application State Object
+        window.appState = {
+            currentUser: null,
+            userProfile: {
+                name: 'PaperGang Scholar',
+                avatarUrl: '',
+                stream: 'Physical Science',
+                bio: 'A/L Scholar building study workflows.',
+                interests: []
+            },
+            todos: [],
+            timetable: [],
+            currentAuthTab: 'login',
+            currentActiveSection: 'home',
+            currentResourceTab: 'maths'
+        };
+
+        // Theme Toggle Manager
+        window.toggleDarkMode = function() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-toggle-icon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                icon.className = 'fa-solid fa-moon text-sm';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.remove('light');
+                html.classList.add('dark');
+                icon.className = 'fa-solid fa-sun text-sm';
+                localStorage.setItem('theme', 'dark');
+            }
+        };
+
+        // Set Initial Theme preferences
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('light');
+            document.getElementById('theme-toggle-icon').className = 'fa-solid fa-moon text-sm';
+        } else {
+            document.documentElement.classList.add('dark');
+            document.getElementById('theme-toggle-icon').className = 'fa-solid fa-sun text-sm';
+        }
+
+        // Toggle Mobile Hamburger Drawer Navigation
+        window.toggleMobileMenu = function() {
+            const drawer = document.getElementById('mobile-menu-drawer');
+            const content = document.getElementById('mobile-drawer-content');
+            drawer.classList.remove('hidden');
+            drawer.classList.add('flex');
+            setTimeout(() => {
+                content.classList.remove('-translate-x-full');
+            }, 50);
+        };
+
+        window.closeMobileMenu = function() {
+            const drawer = document.getElementById('mobile-menu-drawer');
+            const content = document.getElementById('mobile-drawer-content');
+            content.classList.add('-translate-x-full');
+            setTimeout(() => {
+                drawer.classList.remove('flex');
+                drawer.classList.add('hidden');
+            }, 300);
+        };
+
+        window.navigateToMobile = function(sectionId) {
+            window.closeMobileMenu();
+            window.navigateTo(sectionId);
+        };
+
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            console.log("Firebase initialized successfully with live parameters!");
+        } catch (error) {
+            console.warn("Falling back to local simulation due to loading restrictions.", error);
+            isFirebaseMock = true;
+            setupLocalSandboxSimulation();
+        }
+
+        // Custom Sound Synthesizer using Web Audio API
+        function playBeep(frequency = 587.33, duration = 0.5) {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                
+                oscillator.type = 'sine';
+                oscillator.frequency.value = frequency;
+                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + duration);
+            } catch (e) {
+                console.log("Audio contexts not loaded: " + e.message);
+            }
+        }
+
+        // Sandbox offline backup setup
+        function setupLocalSandboxSimulation() {
+            const getMockStorage = (key) => JSON.parse(localStorage.getItem(key)) || {};
+            const saveMockStorage = (key, data) => localStorage.setItem(key, JSON.stringify(data));
+
+            window.mockAuth = {
+                onAuthStateChanged: (callback) => {
+                    window.mockAuth.stateChangedCallback = callback;
+                    const sessionUser = JSON.parse(sessionStorage.getItem('eduspark_session'));
+                    setTimeout(() => callback(sessionUser), 100);
+                },
+                createUser: (email, password, displayName) => {
+                    return new Promise((resolve, reject) => {
+                        setTimeout(() => {
+                            const profiles = getMockStorage('eduspark_mock_profiles');
+                            if (profiles[email]) {
+                                reject({ message: "This email is already in use by another student." });
+                                return;
+                            }
+                            const uid = "mock-uid-" + Math.random().toString(36).substring(2, 11);
+                            profiles[email] = {
+                                uid,
+                                email,
+                                displayName: displayName || "Scholar",
+                                avatarUrl: '',
+                                password,
+                                stream: 'Physical Science',
+                                bio: 'Hi there! I am setting up my academic goals.',
+                                interests: []
+                            };
+                            saveMockStorage('eduspark_mock_profiles', profiles);
+                            const user = { uid, email, displayName };
+                            sessionStorage.setItem('eduspark_session', JSON.stringify(user));
+                            resolve({ user });
+                            if (window.mockAuth.stateChangedCallback) window.mockAuth.stateChangedCallback(user);
+                        }, 500);
+                    });
+                },
+                signIn: (email, password) => {
+                    return new Promise((resolve, reject) => {
+                        setTimeout(() => {
+                            const profiles = getMockStorage('eduspark_mock_profiles');
+                            const record = Object.values(profiles).find(u => u.email === email && u.password === password);
+                            if (record) {
+                                const user = { uid: record.uid, email: record.email, displayName: record.displayName };
+                                sessionStorage.setItem('eduspark_session', JSON.stringify(user));
+                                resolve({ user });
+                                if (window.mockAuth.stateChangedCallback) window.mockAuth.stateChangedCallback(user);
+                            } else {
+                                // If account doesn't exist in local Sandbox during signIn, auto-create it to avoid credentials error
+                                const uid = "mock-uid-" + Math.random().toString(36).substring(2, 11);
+                                profiles[email] = {
+                                    uid,
+                                    email,
+                                    displayName: "Scholar",
+                                    avatarUrl: '',
+                                    password,
+                                    stream: 'Physical Science',
+                                    bio: 'A/L Scholar building study workflows.',
+                                    interests: []
+                                };
+                                saveMockStorage('eduspark_mock_profiles', profiles);
+                                const user = { uid, email, displayName: "Scholar" };
+                                sessionStorage.setItem('eduspark_session', JSON.stringify(user));
+                                resolve({ user });
+                                if (window.mockAuth.stateChangedCallback) window.mockAuth.stateChangedCallback(user);
+                            }
+                        }, 500);
+                    });
+                },
+                signOut: () => {
+                    return new Promise((resolve) => {
+                        sessionStorage.removeItem('eduspark_session');
+                        resolve();
+                        if (window.mockAuth.stateChangedCallback) window.mockAuth.stateChangedCallback(null);
+                    });
+                }
+            };
+        }
+
+        // Custom Beautiful Toast Indicators
+        window.showToast = function(title, message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            let colorClasses = 'border-slate-200 dark:border-slate-800 bg-white dark:bg-space-900 text-slate-850 dark:text-slate-100';
+            let icon = '<i class="fa-solid fa-circle-info text-indigo-500"></i>';
+            
+            if (type === 'success') {
+                colorClasses = 'border-emerald-200 dark:border-emerald-900 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200';
+                icon = '<i class="fa-solid fa-circle-check text-emerald-500"></i>';
+            } else if (type === 'error') {
+                colorClasses = 'border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40 text-red-800 dark:text-red-200';
+                icon = '<i class="fa-solid fa-circle-xmark text-red-500"></i>';
+            }
+
+            toast.className = `flex gap-3 items-start border p-4 rounded-2xl shadow-2xl transition-all duration-300 transform translate-x-12 opacity-0 select-none ${colorClasses}`;
+            toast.innerHTML = `
+                <div class="text-lg shrink-0">${icon}</div>
+                <div class="flex-grow min-w-0">
+                    <h5 class="font-bold text-sm leading-none">${title}</h5>
+                    <p class="text-xs mt-1.5 leading-normal opacity-85 truncate">${message}</p>
+                </div>
+            `;
+            
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.remove('translate-x-12', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('translate-x-12', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        };
+
+        // Screen Routing handler
+        window.navigateTo = function(sectionId) {
+            const sections = ['home', 'resources', 'dashboard'];
+            sections.forEach(s => {
+                const el = document.getElementById(`section-${s}`);
+                if (el) {
+                    if (s === sectionId) el.classList.remove('hidden');
+                    else el.classList.add('hidden');
+                }
+            });
+
+            if (sectionId === 'resources') {
+                updateResourcesLockScreen();
+            }
+
+            window.appState.currentActiveSection = sectionId;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        // Lockscreen update verification
+        function updateResourcesLockScreen() {
+            const unauthorizedGuard = document.getElementById('resources-unauthorized-guard');
+            const authorizedContent = document.getElementById('resources-authorized-content');
+
+            if (window.appState.currentUser) {
+                unauthorizedGuard.classList.add('hidden');
+                authorizedContent.classList.remove('hidden');
+            } else {
+                unauthorizedGuard.classList.remove('hidden');
+                authorizedContent.classList.add('hidden');
+            }
+        }
+
+        // Copy item to clipboard securely
+        window.copyToClipboard = function(elementId) {
+            const element = document.getElementById(elementId);
+            const textToCopy = element.innerText || element.textContent;
+            
+            const tempInput = document.createElement("input");
+            tempInput.value = textToCopy;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+            
+            window.showToast("Copied!", "Account identity code copied to clipboard.", "success");
+        };
+
+        // Open login modals
+        window.openAuthModal = function(tab = 'login') {
+            const modal = document.getElementById('auth-modal');
+            const card = document.getElementById('auth-modal-card');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            setTimeout(() => {
+                card.classList.remove('scale-95', 'opacity-0');
+                card.classList.add('scale-100', 'opacity-100');
+            }, 50);
+
+            switchAuthTab(tab);
+        };
+
+        // Close authentications modals
+        window.closeAuthModal = function() {
+            const modal = document.getElementById('auth-modal');
+            const card = document.getElementById('auth-modal-card');
+            card.classList.remove('scale-100', 'opacity-100');
+            card.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }, 300);
+        };
+
+        // Auth Tabs management
+        window.switchAuthTab = function(tab) {
+            window.appState.currentAuthTab = tab;
+            const btnSubmit = document.getElementById('btn-auth-submit');
+            const nameField = document.getElementById('auth-name-field');
+            const title = document.getElementById('auth-modal-title');
+
+            const tabLogin = document.getElementById('tab-login');
+            const tabSignup = document.getElementById('tab-signup');
+
+            if (tab === 'signup') {
+                title.innerText = "Create Scholar Account";
+                btnSubmit.innerText = "Register Now";
+                nameField.classList.remove('hidden');
+                
+                tabSignup.className = "py-2.5 text-xs font-bold rounded-xl transition-all text-slate-800 dark:text-white bg-white dark:bg-space-900 shadow-md border border-slate-200 dark:border-slate-800";
+                tabLogin.className = "py-2.5 text-xs font-bold rounded-xl transition-all text-slate-505 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white";
+            } else {
+                title.innerText = "Welcome Back Student";
+                btnSubmit.innerText = "Log In";
+                nameField.classList.add('hidden');
+
+                tabLogin.className = "py-2.5 text-xs font-bold rounded-xl transition-all text-slate-800 dark:text-white bg-white dark:bg-space-900 shadow-md border border-slate-200 dark:border-slate-800";
+                tabSignup.className = "py-2.5 text-xs font-bold rounded-xl transition-all text-slate-505 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white";
+            }
+        };
+
+        // Switch filtering tabs
+        window.switchResourceTab = function(subject) {
+            window.appState.currentResourceTab = subject;
+            
+            const categories = ['maths', 'physics', 'chemistry', 'bio'];
+            categories.forEach(cat => {
+                const el = document.getElementById(`category-${cat}`);
+                const btn = document.getElementById(`tab-btn-${cat}`);
+                
+                if (cat === subject) {
+                    if (el) el.classList.remove('hidden');
+                    if (btn) btn.className = "px-5 py-2.5 text-xs font-bold rounded-xl transition-all text-white bg-indigo-600 shadow-lg";
+                } else {
+                    if (el) el.classList.add('hidden');
+                    if (btn) btn.className = "px-5 py-2.5 text-xs font-bold rounded-xl transition-all text-slate-655 dark:text-slate-400 hover:text-slate-955 dark:hover:text-slate-200";
+                }
+            });
+        };
+
+        // Fallback to local sandbox mock mode safely if anonymous authentication is disabled on the project console
+        window.switchToMockMode = function() {
+            if (isFirebaseMock) return;
+            console.warn("Switching dynamically to local sandbox mock mode...");
+            isFirebaseMock = true;
+            setupLocalSandboxSimulation();
+
+            // Re-setup auth observer and reload resources list
+            setupAuthObserver();
+            renderResourcesList(defaultMockResources);
+        };
+
+        // Handle submissions form logic
+        window.handleAuthSubmit = async function(event) {
+            event.preventDefault();
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            const displayName = document.getElementById('auth-display-name').value;
+            const submitBtn = document.getElementById('btn-auth-submit');
+
+            const originalText = submitBtn.innerText;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-2"></i> Connecting...';
+
+            try {
+                if (window.appState.currentAuthTab === 'signup') {
+                    if (isFirebaseMock) {
+                        await window.mockAuth.createUser(email, password, displayName);
+                    } else {
+                        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                        const user = userCredential.user;
+                        
+                        // Rule 1: Setup strict Firestore path
+                        const profileDocRef = doc(db, 'artifacts', appId, 'users', user.uid, 'profile', 'info');
+                        await setDoc(profileDocRef, {
+                            name: displayName || email.split('@')[0],
+                            avatarUrl: '',
+                            stream: 'Physical Science',
+                            bio: 'Excited to begin my study goals here!',
+                            interests: []
+                        });
+                    }
+                    window.showToast("Account Created", "Successfully signed up to PaperGang!", "success");
+                } else {
+                    if (isFirebaseMock) {
+                        await window.mockAuth.signIn(email, password);
+                    } else {
+                        try {
+                            await signInWithEmailAndPassword(auth, email, password);
+                        } catch (signInError) {
+                            // On-the-fly sandbox account auto-generation for seamless testing
+                            if (email === "test_student@eduspark.com" && (signInError.code === 'auth/invalid-credential' || signInError.code === 'auth/user-not-found')) {
+                                console.log("Creating sandbox live testing account...");
+                                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                                const user = userCredential.user;
+                                const profileDocRef = doc(db, 'artifacts', appId, 'users', user.uid, 'profile', 'info');
+                                await setDoc(profileDocRef, {
+                                    name: displayName || "Alex Mercer",
+                                    avatarUrl: '',
+                                    stream: 'Physical Science',
+                                    bio: 'A/L Scholar building study workflows.',
+                                    interests: ["Combined Maths", "Physics"]
+                                });
+                            } else {
+                                throw signInError;
+                            }
+                        }
+                    }
+                }
+                closeAuthModal();
+                navigateTo('dashboard');
+            } catch (error) {
+                console.error(error);
+                
+                // Domain restrictions or invalid API key or restricted-operation triggers safe Local Sandbox backup
+                if (error.code === 'auth/unauthorized-domain' || error.code === 'auth/operation-not-allowed' || error.code === 'auth/restricted-api' || error.code === 'auth/invalid-api-key' || error.code === 'auth/admin-restricted-operation') {
+                    window.showToast("Sandbox Enabled", "Running in secure local Sandbox mock mode due to host constraints.", "info");
+                    window.switchToMockMode();
+                    
+                    if (window.appState.currentAuthTab === 'signup') {
+                        await window.mockAuth.createUser(email, password, displayName);
+                    } else {
+                        await window.mockAuth.signIn(email, password);
+                    }
+                    closeAuthModal();
+                    navigateTo('dashboard');
+                } else {
+                    window.showToast("Auth Error", error.message || "Failed to authenticate.", "error");
+                }
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = originalText;
+            }
+        };
+
+        // Quick Sandbox auto fills
+        window.handleSandboxAccess = async function() {
+            document.getElementById('auth-email').value = "test_student@eduspark.com";
+            document.getElementById('auth-password').value = "password123";
+            document.getElementById('auth-display-name').value = "Alex Mercer";
+            window.showToast("Auto-filled!", "Press Log In to access testing session instantly.", "success");
+        };
+
+        // Handles user sign outs
+        window.handleLogout = async function() {
+            try {
+                if (isFirebaseMock) {
+                    await window.mockAuth.signOut();
+                } else {
+                    await signOut(auth);
+                }
+                window.showToast("Signed Out", "Session closed successfully.", "success");
+                navigateTo('home');
+            } catch (error) {
+                window.showToast("Logout Error", "Failed to clear session safely.", "error");
+            }
+        };
+
+        // Profile Picture Avatar Image renderer helper
+        function renderAvatars(name, avatarUrl) {
+            const initials = name ? name.charAt(0).toUpperCase() : 'P';
+            const navWrapper = document.getElementById('nav-avatar-wrapper');
+            const profileWrapper = document.getElementById('profile-avatar-wrapper');
+
+            const contentHtml = avatarUrl ? 
+                `<img src="${avatarUrl}" alt="${name}" class="h-full w-full object-cover" onerror="this.outerHTML='<div class=\'h-full w-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 text-white flex items-center justify-center font-bold text-sm\'>${initials}</div>'"/>` : 
+                `<div class="h-full w-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 text-white flex items-center justify-center font-bold text-sm">${initials}</div>`;
+
+            const profileContentHtml = avatarUrl ? 
+                `<img src="${avatarUrl}" alt="${name}" class="h-full w-full object-cover" onerror="this.outerHTML='<div class=\'h-full w-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 text-white flex items-center justify-center text-4xl font-black\'>${initials}</div>'"/>` : 
+                `<div class="h-full w-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 text-white flex items-center justify-center text-4xl font-black">${initials}</div>`;
+
+            if (navWrapper) navWrapper.innerHTML = contentHtml;
+            if (profileWrapper) profileWrapper.innerHTML = profileContentHtml;
+        }
+
+        // Handles profile image selection and compression to avoid hitting Firestore limits
+        window.handleFileSelected = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const labelText = document.getElementById('file-label-text');
+            labelText.innerText = "Processing File...";
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(e) {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 120;
+                    const MAX_HEIGHT = 120;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                    window.appState.userProfile.avatarUrl = compressedBase64;
+                    
+                    renderAvatars(window.appState.userProfile.name, compressedBase64);
+                    labelText.innerText = "Image Loaded Successfully!";
+                    window.showToast("Image Prepared", "Press 'Save Details' below to store changes permanently.", "success");
+                };
+            };
+        };
+
+        // Sync and fetch profile data
+        async function fetchUserProfile(userId, email) {
+            const welcomeName = document.getElementById('dash-welcome-name');
+            const summaryName = document.getElementById('profile-summary-name');
+            const summaryEmail = document.getElementById('profile-summary-email');
+            const navUserName = document.getElementById('nav-user-name');
+            const dbUid = document.getElementById('db-user-uid');
+            const statStream = document.getElementById('stat-stream');
+            
+            dbUid.innerText = userId;
+            summaryEmail.innerText = email || 'student@eduspark.com';
+
+            try {
+                let docSnap;
+                if (isFirebaseMock) {
+                    const profiles = JSON.parse(localStorage.getItem('eduspark_mock_profiles')) || {};
+                    const record = Object.values(profiles).find(p => p.uid === userId);
+                    docSnap = {
+                        exists: () => !!record,
+                        data: () => record ? {
+                            name: record.displayName,
+                            avatarUrl: record.avatarUrl || '',
+                            stream: record.stream,
+                            bio: record.bio,
+                            interests: record.interests || []
+                        } : null
+                    };
+                } else {
+                    const docRef = doc(db, 'artifacts', appId, 'users', userId, 'profile', 'info');
+                    docSnap = await getDoc(docRef);
+                }
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    window.appState.userProfile = {
+                        name: data.name || 'PaperGang Scholar',
+                        avatarUrl: data.avatarUrl || '',
+                        stream: data.stream || 'Physical Science',
+                        bio: data.bio || '',
+                        interests: data.interests || []
+                    };
+                } else {
+                    window.appState.userProfile = {
+                        name: 'PaperGang Scholar',
+                        avatarUrl: '',
+                        stream: 'Physical Science',
+                        bio: 'Outline your revision goal structure...',
+                        interests: []
+                    };
+                }
+
+                // UI Rendering
+                welcomeName.innerText = window.appState.userProfile.name;
+                summaryName.innerText = window.appState.userProfile.name;
+                navUserName.innerText = window.appState.userProfile.name;
+                statStream.innerText = window.appState.userProfile.stream;
+                
+                renderAvatars(window.appState.userProfile.name, window.appState.userProfile.avatarUrl);
+
+                document.getElementById('stat-subjects-count').innerText = window.appState.userProfile.interests.length;
+
+                // Bind forms
+                document.getElementById('edit-display-name').value = window.appState.userProfile.name;
+                document.getElementById('file-label-text').innerText = window.appState.userProfile.avatarUrl ? "Change Selected Image" : "Select Image File";
+                document.getElementById('edit-stream').value = window.appState.userProfile.stream;
+                document.getElementById('edit-bio').value = window.appState.userProfile.bio;
+
+                const checkboxes = document.querySelectorAll('input[name="interest"]');
+                checkboxes.forEach(cb => {
+                    cb.checked = window.appState.userProfile.interests.includes(cb.value);
+                });
+
+                await fetchUserTodos(userId);
+                await fetchUserTimetable(userId);
+
+            } catch (err) {
+                console.warn("Profile sync exception handled safely.");
+            }
+        }
+
+        // Handles user profiles updates
+        window.handleProfileUpdate = async function(event) {
+            event.preventDefault();
+            if (!window.appState.currentUser) return;
+
+            const saveBtn = document.getElementById('btn-save-profile');
+            const originalText = saveBtn.innerHTML;
+            
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-2"></i> Syncing...';
+
+            const displayName = document.getElementById('edit-display-name').value;
+            const avatarUrl = window.appState.userProfile.avatarUrl || '';
+            const stream = document.getElementById('edit-stream').value;
+            const bio = document.getElementById('edit-bio').value;
+
+            const checkboxes = document.querySelectorAll('input[name="interest"]:checked');
+            const interests = Array.from(checkboxes).map(cb => cb.value);
+
+            try {
+                const userId = window.appState.currentUser.uid;
+                
+                if (isFirebaseMock) {
+                    const profiles = JSON.parse(localStorage.getItem('eduspark_mock_profiles')) || {};
+                    const email = Object.keys(profiles).find(k => profiles[k].uid === userId);
+                    if (email) {
+                        profiles[email] = { ...profiles[email], displayName, avatarUrl, stream, bio, interests };
+                        localStorage.setItem('eduspark_mock_profiles', JSON.stringify(profiles));
+                    }
+                } else {
+                    const docRef = doc(db, 'artifacts', appId, 'users', userId, 'profile', 'info');
+                    await setDoc(docRef, { name: displayName, avatarUrl: stream, bio, interests }, { merge: true });
+                }
+
+                window.showToast("Profile Updated", "Bio metrics saved successfully.", "success");
+                await fetchUserProfile(userId, window.appState.currentUser.email);
+            } catch (err) {
+                console.warn("Profile update sync failure handled.");
+                window.showToast("Update Failure", "Could not sync update.", "error");
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = originalText;
+            }
+        };
+
+        /* Live Database Resources Syncing and Loading (Firestore සජීවී PDF පූරණය) */
+        function loadLiveFirestoreResources() {
+            if (isFirebaseMock) {
+                renderResourcesList(defaultMockResources);
+                return;
+            }
+
+            // Rule 3: සත්‍යාපනය සාර්ථක වූ පසු Firestore කියවීම
+            const initAuthAndLoad = async () => {
+                try {
+                    await signInAnonymously(auth);
+                    // Rule 1: දත්ත කියවීමේ නිවැරදි Collection ලිපිනය (artifacts/{appId}/public/data/resources)
+                    const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'resources');
+                    
+                    onSnapshot(colRef, (snapshot) => {
+                        const liveResources = [];
+                        snapshot.forEach((doc) => {
+                            liveResources.push({ id: doc.id, ...doc.data() });
+                        });
+                        
+                        if (liveResources.length === 0) {
+                            seedDefaultFirestoreData();
+                        } else {
+                            renderResourcesList(liveResources);
+                        }
+                    }, (err) => {
+                        console.warn("Firestore live resource sync warning:", err.message);
+                        renderResourcesList(defaultMockResources);
+                    });
+                } catch (err) {
+                    if (err.code === 'auth/admin-restricted-operation' || err.code === 'auth/operation-not-allowed') {
+                        console.warn("Firebase Anonymous Auth restricted. Switching gracefully to Mock/Sandbox mode.");
+                        window.switchToMockMode();
+                    } else {
+                        console.warn("Anonymous auth exception handled safely on load:", err.message);
+                        renderResourcesList(defaultMockResources);
+                    }
+                }
+            };
+            initAuthAndLoad();
+        }
+
+        // Seeds Firestore with defaults on initial run so the portal is fully populated with mock templates
+        async function seedDefaultFirestoreData() {
+            try {
+                for (const item of defaultMockResources) {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'resources', item.id);
+                    await setDoc(docRef, {
+                        title: item.title,
+                        category: item.category,
+                        fileUrl: item.fileUrl
+                    });
+                }
+            } catch (e) {
+                console.warn("Error seeding initial files handled.");
+            }
+        }
+
+        // ලැබෙන PDF දත්ත අනුව Cards සෑදීම
+        function renderResourcesList(resources) {
+            const categoriesMap = {
+                "Combined Maths": "category-maths",
+                "Physics": "category-physics",
+                "Chemistry": "category-chemistry",
+                "Biology": "category-bio"
+            };
+
+            Object.values(categoriesMap).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = '';
+            });
+
+            resources.forEach(item => {
+                const targetId = categoriesMap[item.category];
+                if (!targetId) return;
+
+                const parentGrid = document.getElementById(targetId);
+                if (!parentGrid) return;
+
+                const colorClasses = item.category === "Combined Maths" ? "bg-red-50 dark:bg-red-950/50 text-red-655 dark:text-red-400" :
+                                     item.category === "Physics" ? "bg-blue-50 dark:bg-blue-950/50 text-blue-655 dark:text-blue-400" :
+                                     item.category === "Chemistry" ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-655 dark:text-emerald-400" :
+                                     "bg-amber-50 dark:bg-amber-955/50 text-amber-655 dark:text-amber-400";
+
+                // Google Drive Links compatibility (Direct preview embed converter)
+                let embeddableUrl = item.fileUrl;
+                if (item.fileUrl && item.fileUrl.includes("drive.google.com") && item.fileUrl.includes("/view")) {
+                    embeddableUrl = item.fileUrl.replace("/view", "/preview");
+                }
+
+                const cardHtml = `
+                    <div class="bg-white dark:bg-space-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between hover:border-indigo-500/40 transition-all group duration-350 neon-border">
+                        <div>
+                            <div class="flex justify-between items-start mb-4">
+                                <span class="px-3 py-1 ${colorClasses} rounded-lg text-xs font-bold uppercase">${item.category}</span>
+                                <span class="text-xs font-semibold text-slate-400 dark:text-slate-500">PDF Guide</span>
+                            </div>
+                            <h3 class="font-bold text-lg text-slate-855 dark:text-white mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition">${item.title}</h3>
+                            <p class="text-xs text-slate-505 dark:text-slate-404 mb-4">Complete curriculum theoretical guidelines compiled for PaperGang scholars.</p>
+                        </div>
+                        <div class="border-t border-slate-100 dark:border-slate-855 pt-4 flex items-center justify-between gap-3">
+                            <span class="text-[11px] font-semibold text-slate-400 dark:text-slate-500"><i class="fa-regular fa-file-pdf text-red-500 mr-1.5"></i> PDF Asset</span>
+                            <div class="flex gap-2">
+                                <button onclick="viewPdfMock('${item.title}', '${embeddableUrl}')" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-750 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 transition-all">Read</button>
+                                <button onclick="window.open('${item.fileUrl ? item.fileUrl : '#'}', '_blank')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-xs font-bold text-white transition-all ${!item.fileUrl ? 'pointer-events-none opacity-40' : ''}"><i class="fa-solid fa-download"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                parentGrid.innerHTML += cardHtml;
+            });
+
+            Object.values(categoriesMap).forEach(id => {
+                const el = document.getElementById(id);
+                if (el && el.innerHTML === '') {
+                    el.innerHTML = `
+                        <div class="col-span-full py-12 text-center text-slate-400 dark:text-slate-500">
+                            <i class="fa-regular fa-folder-open text-3xl mb-3 opacity-40"></i>
+                            <p class="text-sm font-bold">No active PDFs under this category yet.</p>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        // සැබෑ PDF කියවනය
+        window.viewPdfMock = function(title, fileUrl) {
+            document.getElementById('pdf-viewer-title').innerText = `${title} - Study Summary PDF`;
+            
+            const pdfFrame = document.getElementById('pdf-frame');
+            if (fileUrl) {
+                pdfFrame.src = fileUrl;
+                pdfFrame.classList.remove('hidden');
+            } else {
+                pdfFrame.src = "about:blank";
+                pdfFrame.classList.add('hidden');
+            }
+
+            document.getElementById('pdf-viewer-modal').classList.remove('hidden');
+            document.getElementById('pdf-viewer-modal').classList.add('flex');
+            
+            const btn = document.getElementById('pdf-download-action-btn');
+            btn.onclick = () => {
+                if (fileUrl) {
+                    window.open(fileUrl, '_blank');
+                } else {
+                    window.showToast("Local Simulator", "Simulation note opened successfully.", "success");
+                }
+            };
+        };
+
+        // PDF කියවනය වැසීමේ ශ්‍රිතය (Close PDF Viewer Function)
+        window.closePdfViewer = function() {
+            document.getElementById('pdf-viewer-modal').classList.remove('flex');
+            document.getElementById('pdf-viewer-modal').classList.add('hidden');
+            document.getElementById('pdf-frame').src = "about:blank";
+        };
+
+        /* ---------------- INTEGRATED ADMIN GATEPORT KEYBOARD/MOUSE LISTENERS ---------------- */
+        
+        // ඇඩ්මින් මුරපද දොරටුව විවෘත කිරීම
+        window.openAdminPasscodeGate = function() {
+            const modal = document.getElementById('admin-passcode-modal');
+            const card = document.getElementById('admin-passcode-card');
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                card.classList.remove('scale-95', 'opacity-0');
+                card.classList.add('scale-100', 'opacity-100');
+                document.getElementById('admin-secret-passcode').focus();
+            }, 50);
+        };
+
+        window.closeAdminPasscodeGate = function() {
+            const modal = document.getElementById('admin-passcode-modal');
+            const card = document.getElementById('admin-passcode-card');
+            
+            card.classList.remove('scale-100', 'opacity-100');
+            card.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+                document.getElementById('admin-secret-passcode').value = '';
+            }, 300);
+        };
+
+        // ඇඩ්මින් මුරපදය පරීක්ෂා කිරීම
+        window.handlePasscodeVerification = function(event) {
+            event.preventDefault();
+            const passcode = document.getElementById('admin-secret-passcode').value;
+            if (passcode === "admin123") {
+                window.closeAdminPasscodeGate();
+                window.openAdminPanel();
+                window.showToast("Access Granted", "Welcome to administrative sync console.", "success");
+            } else {
+                window.showToast("Access Denied", "Incorrect passcode verification entry.", "error");
+            }
+        };
+
+        // ඇඩ්මින් පැනලය විවෘත කිරීම
+        window.openAdminPanel = function() {
+            const modal = document.getElementById('admin-panel-modal');
+            const card = document.getElementById('admin-panel-card');
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                card.classList.remove('scale-95', 'opacity-0');
+                card.classList.add('scale-100', 'opacity-100');
+            }, 50);
+
+            // ඇඩ්මින් සඳහා සජීවී Firestore සම්බන්ධතාවය සක්‍රීය කිරීම
+            listenAdminLiveResources();
+        };
+
+        window.closeAdminPanel = function() {
+            const modal = document.getElementById('admin-panel-modal');
+            const card = document.getElementById('admin-panel-card');
+            
+            card.classList.remove('scale-100', 'opacity-100');
+            card.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }, 300);
+        };
+
+        // ඇඩ්මින් සඳහා සජීවී Firestore සම්බන්ධතාවය (Real-time public resources sync)
+        let adminSnapshotUnsubscribe = null;
+        function listenAdminLiveResources() {
+            if (isFirebaseMock) {
+                renderAdminResourcesList(defaultMockResources);
+                return;
+            }
+
+            // Rule 1: නිවැරදි Firestore ඇඩ්මින් Collection මාර්ගය (artifacts/{appId}/public/data/resources)
+            const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'resources');
+            
+            if (adminSnapshotUnsubscribe) adminSnapshotUnsubscribe();
+            
+            adminSnapshotUnsubscribe = onSnapshot(colRef, (snapshot) => {
+                const resources = [];
+                snapshot.forEach((doc) => {
+                    resources.push({ id: doc.id, ...doc.data() });
+                });
+                renderAdminResourcesList(resources);
+            }, (err) => {
+                console.warn("Admin list stream failed handled.");
+            });
+        }
+
+        // ඇඩ්මින් පැනලයේ PDF ලැයිස්තුව පෙන්වීම
+        function renderAdminResourcesList(resources) {
+            const container = document.getElementById('admin-resources-list');
+            container.innerHTML = '';
+
+            if (resources.length === 0) {
+                container.innerHTML = `
+                    <div class="py-12 text-center text-slate-400 dark:text-slate-500">
+                        <i class="fa-regular fa-folder-open text-3xl mb-3 opacity-40"></i>
+                        <p class="text-sm font-bold">No active PDFs in study list yet.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            resources.forEach(item => {
+                const colorCircle = item.category === "Combined Maths" ? "bg-red-500" :
+                                    item.category === "Physics" ? "bg-blue-500" :
+                                    item.category === "Chemistry" ? "bg-emerald-500" :
+                                    "bg-amber-500";
+
+                const itemHtml = `
+                    <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-space-955 rounded-2xl border border-slate-200 dark:border-slate-855 shadow-sm hover:border-slate-300 dark:hover:border-slate-800 transition-all">
+                        <div class="flex items-center gap-3">
+                            <span class="h-2.5 w-2.5 rounded-full ${colorCircle}"></span>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-800 dark:text-slate-200 leading-none">${item.title}</h4>
+                                <p class="text-[9px] text-slate-400 dark:text-slate-550 font-mono tracking-wider mt-1">${item.category} • ID: ${item.id}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            ${item.fileUrl ? `<a href="${item.fileUrl}" target="_blank" class="p-2 text-indigo-600 dark:text-indigo-400 hover:scale-110 transition-all text-sm" title="Preview File"><i class="fa-solid fa-eye"></i></a>` : ''}
+                            <button onclick="deleteResourceItem('${item.id}')" class="p-2 text-slate-400 hover:text-red-500 transition-all text-sm" title="Delete Note">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += itemHtml;
+            });
+        }
+
+        // PDF ගොනුව බේස්64 බවට පත් කිරීම
+        window.handlePdfSelected = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (file.size > 1024 * 1024) {
+                window.showToast("File Too Large", "Local Base64 upload supports max 1MB files. For larger documents, please paste a direct web URL link.", "error");
+                event.target.value = "";
+                return;
+            }
+
+            const label = document.getElementById('pdf-file-label');
+            label.innerText = "Processing PDF...";
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(e) {
+                activeAdminBase64String = e.target.result;
+                label.innerText = `Loaded: ${file.name.substring(0, 15)}...`;
+                window.showToast("File Prepared", "PDF successfully processed to Base64 stream.", "success");
+            };
+        };
+
+        // නව PDF එකක් Firestore එකට ඇතුල් කිරීම (පොදු දත්ත එකතුව - artifacts/{appId}/public/data/resources)
+        window.handleAddNewResource = async function(event) {
+            event.preventDefault();
+            const btn = document.getElementById('btn-add-resource');
+            const originalText = btn.innerHTML;
+
+            const title = document.getElementById('resource-title').value.trim();
+            const category = document.getElementById('resource-category').value;
+            const pasteLink = document.getElementById('resource-link').value.trim();
+
+            let targetFileUrl = pasteLink;
+            if (activeAdminBase64String) {
+                targetFileUrl = activeAdminBase64String;
+            }
+
+            if (!targetFileUrl) {
+                window.showToast("Missing URL/File", "Please upload a local PDF or paste an online PDF download URL link.", "error");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-2"></i> Syncing Library...';
+
+            try {
+                const docId = "note-" + Date.now();
+                
+                if (isFirebaseMock) {
+                    defaultMockResources.push({ id: docId, title, category, fileUrl: targetFileUrl });
+                    renderAdminResourcesList(defaultMockResources);
+                    renderResourcesList(defaultMockResources);
+                } else {
+                    // Rule 1: දැඩි මාර්ගය අනුගමනය කිරීම
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'resources', docId);
+                    await setDoc(docRef, {
+                        title: title,
+                        category: category,
+                        fileUrl: targetFileUrl
+                    });
+                }
+
+                document.getElementById('resource-title').value = "";
+                document.getElementById('resource-link').value = "";
+                document.getElementById('resource-file').value = "";
+                document.getElementById('pdf-file-label').innerText = "Select PDF File";
+                activeAdminBase64String = "";
+
+                window.showToast("Document Synced", `"${title}" has been successfully added to PaperGang Student Portal!`, "success");
+            } catch (err) {
+                console.warn("PDF upload sync failure handled gracefully.");
+                window.showToast("Upload Failure", "Could not complete document database sync.", "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        };
+
+        // PDF ගොනු Firestore එකෙන් ඉවත් කිරීම
+        window.deleteResourceItem = async function(docId) {
+            try {
+                if (isFirebaseMock) {
+                    const idx = defaultMockResources.findIndex(r => r.id === docId);
+                    if (idx > -1) defaultMockResources.splice(idx, 1);
+                    renderAdminResourcesList(defaultMockResources);
+                    renderResourcesList(defaultMockResources);
+                } else {
+                    // Rule 1: Deletion සඳහා දැඩි මාර්ගය භාවිතා කිරීම
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'resources', docId);
+                    await deleteDoc(docRef);
+                }
+                window.showToast("Deleted", "Document successfully removed from public directory.", "success");
+            } catch (err) {
+                console.warn("Document delete error handled.");
+                window.showToast("Deletion Failure", "Failed to clear document from Firestore.", "error");
+            }
+        };
+
+
+        /* Focus Pomodoro Timer Code */
+        let timerInterval = null;
+        let originalTimeSec = 25 * 60;
+        let currentRemainingSec = 25 * 60;
+        let isTimerActive = false;
+
+        window.adjustTimerDuration = function(minutes) {
+            if (isTimerActive) return;
+            originalTimeSec = minutes * 60;
+            currentRemainingSec = originalTimeSec;
+            updateTimerUI();
+        };
+
+        window.applyCustomTimer = function() {
+            if (isTimerActive) return;
+            const val = parseInt(document.getElementById('timer-custom-min').value);
+            if (isNaN(val) || val < 1 || val > 180) {
+                window.showToast("Invalid Input", "Please select custom times between 1 and 180 minutes.", "error");
+                return;
+            }
+            adjustTimerDuration(val);
+        };
+
+        function updateTimerUI() {
+            const minutes = Math.floor(currentRemainingSec / 60);
+            const seconds = currentRemainingSec % 60;
+            document.getElementById('timer-time-display').innerText = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            const circle = document.getElementById('timer-progress-circle');
+            const totalDash = 515;
+            const percentRemaining = currentRemainingSec / originalTimeSec;
+            const offset = totalDash * (1 - percentRemaining);
+            circle.setAttribute('stroke-dashoffset', offset);
+        }
+
+        window.toggleTimer = function() {
+            const btn = document.getElementById('btn-timer-toggle');
+            const stateLabel = document.getElementById('timer-state-label');
+            
+            if (isTimerActive) {
+                clearInterval(timerInterval);
+                isTimerActive = false;
+                btn.innerHTML = '<i class="fa-solid fa-play"></i> Resume focus';
+                btn.className = "px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-505 text-sm font-bold text-white shadow-xl transition-all flex items-center gap-2";
+                stateLabel.innerText = "Paused";
+            } else {
+                isTimerActive = true;
+                btn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause timer';
+                btn.className = "px-6 py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-sm font-bold text-white shadow-xl transition-all flex items-center gap-2";
+                stateLabel.innerText = "Focus Active";
+                
+                timerInterval = setInterval(() => {
+                    currentRemainingSec--;
+                    updateTimerUI();
+                    
+                    if (currentRemainingSec <= 0) {
+                        clearInterval(timerInterval);
+                        isTimerActive = false;
+                        playBeep(659.25, 1.2);
+                        btn.innerHTML = '<i class="fa-solid fa-play"></i> Start focus';
+                        btn.className = "px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-505 text-sm font-bold text-white shadow-xl transition-all flex items-center gap-2";
+                        stateLabel.innerText = "Time Up!";
+                        window.showToast("Time is Up!", "Excellent session. Take a light break.", "success");
+                    }
+                }, 1000);
+            }
+        };
+
+        window.resetTimer = function() {
+            clearInterval(timerInterval);
+            isTimerActive = false;
+            currentRemainingSec = originalTimeSec;
+            updateTimerUI();
+            
+            const btn = document.getElementById('btn-timer-toggle');
+            btn.innerHTML = '<i class="fa-solid fa-play"></i> Start focus';
+            btn.className = "px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-505 text-sm font-bold text-white shadow-xl transition-all flex items-center gap-2";
+            document.getElementById('timer-state-label').innerText = "Ready";
+        };
+
+        /* To-Do Items Tracker code */
+        async function fetchUserTodos(userId) {
+            window.appState.todos = [];
+            try {
+                if (isFirebaseMock) {
+                    window.appState.todos = JSON.parse(localStorage.getItem(`eduspark_todos_${userId}`)) || [];
+                } else {
+                    const colRef = collection(db, 'artifacts', appId, 'users', userId, 'todos');
+                    const snap = await getDocs(colRef);
+                    snap.forEach(doc => {
+                        window.appState.todos.push({ id: doc.id, ...doc.data() });
+                    });
+                }
+            } catch (err) {
+                console.warn("Todos fetch fallback triggered handled.");
+            }
+            renderTodos();
+        }
+
+        function renderTodos() {
+            const list = document.getElementById('todo-list');
+            const empty = document.getElementById('todo-empty-state');
+            list.innerHTML = '';
+            
+            if (window.appState.todos.length === 0) {
+                empty.classList.remove('hidden');
+                updateProgressUI(0);
+                return;
+            }
+            empty.classList.add('hidden');
+
+            let completedCount = 0;
+            window.appState.todos.forEach(todo => {
+                if (todo.completed) completedCount++;
+                
+                const item = document.createElement('li');
+                item.className = "flex items-center justify-between p-4 bg-slate-50 dark:bg-space-950 rounded-2xl border border-slate-200 dark:border-slate-800 transition-all hover:border-indigo-500/30 shadow-sm";
+                item.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <button onclick="toggleTodoCompleted('${todo.id}', ${todo.completed})" class="text-xl focus:outline-none text-slate-400 hover:text-indigo-500 transition-all">
+                            <i class="${todo.completed ? 'fa-solid fa-circle-check text-indigo-600 animate-pulse' : 'fa-regular fa-circle'}"></i>
+                        </button>
+                        <span class="text-sm ${todo.completed ? 'line-through text-slate-405 dark:text-slate-550' : 'text-slate-700 dark:text-slate-200'} font-semibold">${todo.title}</span>
+                    </div>
+                    <button onclick="deleteTodo('${todo.id}')" class="text-slate-400 hover:text-red-500 p-1.5 transition-all">
+                        <i class="fa-regular fa-trash-can text-sm"></i>
+                    </button>
+                `;
+                list.appendChild(item);
+            });
+
+            const percent = Math.round((completedCount / window.appState.todos.length) * 100);
+            updateProgressUI(percent);
+        }
+
+        function updateProgressUI(percent) {
+            document.getElementById('todo-progress-label').innerText = `${percent}% Done`;
+            document.getElementById('todo-progress-bar').style.width = `${percent}%`;
+        }
+
+        window.handleAddTodo = async function(event) {
+            event.preventDefault();
+            const input = document.getElementById('todo-input');
+            const text = input.value.trim();
+            if (!text || !window.appState.currentUser) return;
+
+            const userId = window.appState.currentUser.uid;
+            const newTodo = {
+                title: text,
+                completed: false,
+                timestamp: Date.now()
+            };
+
+            try {
+                if (isFirebaseMock) {
+                    const id = "mock-todo-" + Math.random().toString(36).substring(2, 11);
+                    window.appState.todos.push({ id, ...newTodo });
+                    localStorage.setItem(`eduspark_todos_${userId}`, JSON.stringify(window.appState.todos));
+                } else {
+                    const id = "todo-" + Date.now();
+                    const docRef = doc(db, 'artifacts', appId, 'users', userId, 'todos', id);
+                    await setDoc(docRef, newTodo);
+                }
+                
+                input.value = '';
+                await fetchUserTodos(userId);
+                window.showToast("Task Added", "Target saved successfully.", "success");
+            } catch (err) {
+                console.warn("Add todo error handled.");
+                window.showToast("Error", "Could not submit task.", "error");
+            }
+        };
+
+        window.toggleTodoCompleted = async function(todoId, currentStatus) {
+            if (!window.appState.currentUser) return;
+            const userId = window.appState.currentUser.uid;
+
+            try {
+                if (isFirebaseMock) {
+                    window.appState.todos = window.appState.todos.map(t => {
+                        if (t.id === docId) t.completed = !currentStatus;
+                        return t;
+                    });
+                    localStorage.setItem(`eduspark_todos_${userId}`, JSON.stringify(window.appState.todos));
+                } else {
+                    const docRef = doc(db, 'artifacts', appId, 'users', userId, 'todos', todoId);
+                    await updateDoc(docRef, { completed: !currentStatus });
+                }
+                
+                await fetchUserTodos(userId);
+            } catch (err) {
+                console.warn("Toggle todo status error handled.");
+            }
+        };
+
+        window.deleteTodo = async function(todoId) {
+            if (!window.appState.currentUser) return;
+            const userId = window.appState.currentUser.uid;
+
+            try {
+                if (isFirebaseMock) {
+                    window.appState.todos = window.appState.todos.filter(t => t.id !== todoId);
+                    localStorage.setItem(`eduspark_todos_${userId}`, JSON.stringify(window.appState.todos));
+                } else {
+                    const docRef = doc(db, 'artifacts', appId, 'users', userId, 'todos', todoId);
+                    await deleteDoc(docRef);
+                }
+                
+                await fetchUserTodos(userId);
+                window.showToast("Goal Cleared", "Removed goal from tracker.", "success");
+            } catch (err) {
+                console.warn("Delete todo error handled.");
+            }
+        };
+
+        /* Weekly Calendar scheduling code */
+        const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+        async function fetchUserTimetable(userId) {
+            window.appState.timetable = [];
+            try {
+                if (isFirebaseMock) {
+                    window.appState.timetable = JSON.parse(localStorage.getItem(`eduspark_timetable_${userId}`)) || [];
+                } else {
+                    const colRef = collection(db, 'artifacts', appId, 'users', userId, 'timetable');
+                    const snap = await getDocs(colRef);
+                    snap.forEach(doc => {
+                        window.appState.timetable.push({ id: doc.id, ...doc.data() });
+                    });
+                }
+            } catch (err) {
+                console.warn("Timetable sync failure handled.");
+            }
+            renderTimetable();
+        }
+
+        function renderTimetable() {
+            const grid = document.getElementById('timetable-days-grid');
+            grid.innerHTML = '';
+
+            daysOfWeek.forEach(day => {
+                const daySlots = window.appState.timetable.filter(slot => slot.day === day);
+                
+                const card = document.createElement('div');
+                card.className = "p-3.5 bg-slate-50 dark:bg-space-955 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-2 flex flex-col justify-between hover:border-indigo-500/20 transition-all duration-300 shadow-sm";
+                
+                let slotsHtml = '';
+                if (daySlots.length === 0) {
+                    slotsHtml = `<span class="text-[10px] text-slate-400 italic block">No slots planned</span>`;
+                } else {
+                    daySlots.forEach(s => {
+                        slotsHtml += `
+                            <div class="p-2 bg-indigo-50 dark:bg-indigo-950/40 rounded-xl border border-indigo-100 dark:border-indigo-900/30 text-[10px] space-y-1 relative group/slot transition-all hover:bg-indigo-100 dark:hover:bg-indigo-900/30 shadow-sm">
+                                <span class="block font-bold text-indigo-700 dark:text-indigo-300 truncate">${s.subject}</span>
+                                <span class="block text-slate-505 dark:text-slate-400 text-[9px]">${s.startTime} - ${s.endTime}</span>
+                                <button onclick="deleteTimetableSlot('${s.id}')" class="absolute top-1 right-1 opacity-0 group-hover/slot:opacity-100 text-red-555 hover:text-red-750 transition-all">
+                                    <i class="fa-solid fa-xmark text-[10px]"></i>
+                                </button>
+                            </div>
+                        `;
+                    });
+                }
+
+                card.innerHTML = `
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-800 dark:text-slate-200 border-b border-slate-200 dark:border-slate-855 pb-2 mb-2">${day}</h4>
+                        <div class="space-y-2 max-h-[140px] overflow-y-auto">
+                            ${slotsHtml}
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        window.openTimetableModal = function() {
+            const modal = document.getElementById('timetable-modal');
+            const card = document.getElementById('timetable-modal-card');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                card.classList.remove('scale-95', 'opacity-0');
+                card.classList.add('scale-100', 'opacity-100');
+            }, 50);
+        };
+
+        window.closeTimetableModal = function() {
+            const modal = document.getElementById('timetable-modal');
+            const card = document.getElementById('timetable-modal-card');
+            card.classList.remove('scale-100', 'opacity-100');
+            card.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }, 300);
+        };
+
+        window.handleTimetableSubmit = async function(event) {
+            event.preventDefault();
+            if (!window.appState.currentUser) return;
+
+            const userId = window.appState.currentUser.uid;
+            const day = document.getElementById('time-day').value;
+            const subject = document.getElementById('time-subject').value.trim();
+            const startTime = document.getElementById('time-start').value;
+            const endTime = document.getElementById('time-end').value;
+
+            const newSlot = { day, subject, startTime, endTime };
+
+            try {
+                if (isFirebaseMock) {
+                    const id = "mock-slot-" + Math.random().toString(36).substring(2, 11);
+                    window.appState.timetable.push({ id, ...newSlot });
+                    localStorage.setItem(`eduspark_timetable_${userId}`, JSON.stringify(window.appState.timetable));
+                } else {
+                    const id = "slot-" + Date.now();
+                    const docRef = doc(db, 'artifacts', appId, 'users', userId, 'timetable', id);
+                    await setDoc(docRef, newSlot);
+                }
+
+                document.getElementById('time-subject').value = '';
+                closeTimetableModal();
+                await fetchUserTimetable(userId);
+                window.showToast("Slot Saved", "Revision block scheduled on calendar.", "success");
+            } catch (err) {
+                console.warn("Add timetable slot error handled.");
+                window.showToast("Scheduling Error", "Could not complete scheduling.", "error");
+            }
+        };
+
+        window.deleteTimetableSlot = async function(slotId) {
+            if (!window.appState.currentUser) return;
+            const userId = window.appState.currentUser.uid;
+
+            try {
+                if (isFirebaseMock) {
+                    window.appState.timetable = window.appState.timetable.filter(slot => slot.id !== slotId);
+                    localStorage.setItem(`eduspark_timetable_${userId}`, JSON.stringify(window.appState.timetable));
+                } else {
+                    const docRef = doc(db, 'artifacts', appId, 'users', userId, 'timetable', slotId);
+                    await deleteDoc(docRef);
+                }
+
+                await fetchUserTimetable(userId);
+                window.showToast("Slot Removed", "Weekly calendar updated.", "success");
+            } catch (err) {
+                console.warn("Delete timetable slot error handled.");
+            }
+        };
+
+        /* Secure Observers bindings */
+        const setupAuthObserver = () => {
+            const guestNav = document.getElementById('guest-nav-actions');
+            const userNav = document.getElementById('user-nav-actions');
+            const navLinkDashboard = document.getElementById('nav-link-dashboard');
+            const mobileNavLinkDashboard = document.getElementById('mobile-nav-link-dashboard');
+
+            const observerCallback = (user) => {
+                if (user) {
+                    window.appState.currentUser = user;
+                    guestNav.classList.add('hidden');
+                    userNav.classList.remove('hidden');
+                    navLinkDashboard.classList.remove('hidden');
+                    if (mobileNavLinkDashboard) mobileNavLinkDashboard.classList.remove('hidden');
+                    
+                    fetchUserProfile(user.uid, user.email);
+                } else {
+                    window.appState.currentUser = null;
+                    guestNav.classList.remove('hidden');
+                    userNav.classList.add('hidden');
+                    navLinkDashboard.classList.add('hidden');
+                    if (mobileNavLinkDashboard) mobileNavLinkDashboard.classList.add('hidden');
+                    renderAvatars('P', '');
+                    
+                    if (window.appState.currentActiveSection === 'dashboard') {
+                        navigateTo('home');
+                    }
+                }
+                updateResourcesLockScreen();
+            };
+
+            if (isFirebaseMock) {
+                window.mockAuth.onAuthStateChanged(observerCallback);
+            } else {
+                onAuthStateChanged(auth, observerCallback);
+            }
+        };
+
+        window.onload = function() {
+            setupAuthObserver();
+            loadLiveFirestoreResources();
+            navigateTo('home');
+        };
+    </script>
+</body>
+</html>
